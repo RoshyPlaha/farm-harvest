@@ -1,0 +1,71 @@
+{
+  "version": "16.0.0",
+  "artifacts": {
+    "FarmHarvestStackprodLambdaStack199DC2C2.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "FarmHarvestStackprodLambdaStack199DC2C2.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "FarmHarvestStackprodLambdaStack199DC2C2": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://874189950062/eu-west-2",
+      "properties": {
+        "templateFile": "FarmHarvestStackprodLambdaStack199DC2C2.template.json",
+        "validateOnSynth": true,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::874189950062:role/cdk-hnb659fds-deploy-role-874189950062-eu-west-2",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::874189950062:role/cdk-hnb659fds-cfn-exec-role-874189950062-eu-west-2",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-874189950062-eu-west-2/67045d8e1ba7075dc5de934e97be18f9220881a1838f83b87337fd68a3beadd5.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "FarmHarvestStackprodLambdaStack199DC2C2.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::874189950062:role/cdk-hnb659fds-lookup-role-874189950062-eu-west-2",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        },
+        "stackName": "prod-LambdaStack"
+      },
+      "dependencies": [
+        "FarmHarvestStackprodLambdaStack199DC2C2.assets"
+      ],
+      "metadata": {
+        "/FarmHarvestStack/prod/LambdaStack/LambdaFunction/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaFunctionServiceRoleC555A460"
+          }
+        ],
+        "/FarmHarvestStack/prod/LambdaStack/LambdaFunction/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaFunctionBF21E41F"
+          }
+        ],
+        "/FarmHarvestStack/prod/LambdaStack/CDKMetadata/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadata"
+          }
+        ],
+        "/FarmHarvestStack/prod/LambdaStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/FarmHarvestStack/prod/LambdaStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "FarmHarvestStack/prod/LambdaStack"
+    }
+  }
+}

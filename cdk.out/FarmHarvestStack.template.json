@@ -1,51 +1,53 @@
 {
   "Resources": {
-    "MyFirstBucketB8884501": {
+    "PipelineArtifactsBucketAEA9A052": {
       "Type": "AWS::S3::Bucket",
       "Properties": {
-        "Tags": [
-          {
-            "Key": "aws-cdk:auto-delete-objects",
-            "Value": "true"
-          }
-        ],
-        "VersioningConfiguration": {
-          "Status": "Enabled"
+        "BucketEncryption": {
+          "ServerSideEncryptionConfiguration": [
+            {
+              "ServerSideEncryptionByDefault": {
+                "SSEAlgorithm": "aws:kms"
+              }
+            }
+          ]
+        },
+        "PublicAccessBlockConfiguration": {
+          "BlockPublicAcls": true,
+          "BlockPublicPolicy": true,
+          "IgnorePublicAcls": true,
+          "RestrictPublicBuckets": true
         }
       },
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete",
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain",
       "Metadata": {
-        "aws:cdk:path": "FarmHarvestStack/MyFirstBucket/Resource"
+        "aws:cdk:path": "FarmHarvestStack/Pipeline/Pipeline/ArtifactsBucket/Resource"
       }
     },
-    "MyFirstBucketPolicy3243DEFD": {
+    "PipelineArtifactsBucketPolicyF53CCC52": {
       "Type": "AWS::S3::BucketPolicy",
       "Properties": {
         "Bucket": {
-          "Ref": "MyFirstBucketB8884501"
+          "Ref": "PipelineArtifactsBucketAEA9A052"
         },
         "PolicyDocument": {
           "Statement": [
             {
-              "Action": [
-                "s3:GetBucket*",
-                "s3:List*",
-                "s3:DeleteObject*"
-              ],
-              "Effect": "Allow",
-              "Principal": {
-                "AWS": {
-                  "Fn::GetAtt": [
-                    "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
-                    "Arn"
-                  ]
+              "Action": "s3:*",
+              "Condition": {
+                "Bool": {
+                  "aws:SecureTransport": "false"
                 }
+              },
+              "Effect": "Deny",
+              "Principal": {
+                "AWS": "*"
               },
               "Resource": [
                 {
                   "Fn::GetAtt": [
-                    "MyFirstBucketB8884501",
+                    "PipelineArtifactsBucketAEA9A052",
                     "Arn"
                   ]
                 },
@@ -55,7 +57,62 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "MyFirstBucketB8884501",
+                          "PipelineArtifactsBucketAEA9A052",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*"
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":role/cdk-hnb659fds-deploy-role-",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      "-",
+                      {
+                        "Ref": "AWS::Region"
+                      }
+                    ]
+                  ]
+                }
+              },
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "PipelineArtifactsBucketAEA9A052",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "PipelineArtifactsBucketAEA9A052",
                           "Arn"
                         ]
                       },
@@ -70,101 +127,1330 @@
         }
       },
       "Metadata": {
-        "aws:cdk:path": "FarmHarvestStack/MyFirstBucket/Policy/Resource"
+        "aws:cdk:path": "FarmHarvestStack/Pipeline/Pipeline/ArtifactsBucket/Policy/Resource"
       }
     },
-    "MyFirstBucketAutoDeleteObjectsCustomResourceC52FCF6E": {
-      "Type": "Custom::S3AutoDeleteObjects",
-      "Properties": {
-        "ServiceToken": {
-          "Fn::GetAtt": [
-            "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
-            "Arn"
-          ]
-        },
-        "BucketName": {
-          "Ref": "MyFirstBucketB8884501"
-        }
-      },
-      "DependsOn": [
-        "MyFirstBucketPolicy3243DEFD"
-      ],
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete",
-      "Metadata": {
-        "aws:cdk:path": "FarmHarvestStack/MyFirstBucket/AutoDeleteObjectsCustomResource/Default"
-      }
-    },
-    "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092": {
+    "PipelineRoleB27FAA37": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
-          "Version": "2012-10-17",
           "Statement": [
             {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": "lambda.amazonaws.com"
+                "Service": "codepipeline.amazonaws.com"
               }
             }
-          ]
+          ],
+          "Version": "2012-10-17"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "FarmHarvestStack/Pipeline/Pipeline/Role/Resource"
+      }
+    },
+    "PipelineRoleDefaultPolicy7BDC1ABB": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*",
+                "s3:DeleteObject*",
+                "s3:PutObject",
+                "s3:PutObjectLegalHold",
+                "s3:PutObjectRetention",
+                "s3:PutObjectTagging",
+                "s3:PutObjectVersionTagging",
+                "s3:Abort*"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "PipelineArtifactsBucketAEA9A052",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "PipelineArtifactsBucketAEA9A052",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "PipelineBuildSynthCodePipelineActionRole4E7A6C97",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "PipelineUpdatePipelineSelfMutateCodePipelineActionRoleD6D4E5CF",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "PipelineAssetsFileAsset1CodePipelineActionRoleC0EC649A",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":iam::",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":role/cdk-hnb659fds-deploy-role-",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    "-",
+                    {
+                      "Ref": "AWS::Region"
+                    }
+                  ]
+                ]
+              }
+            },
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "PipelineInEnvironmentManualapprovalbeforeproductionCodePipelineActionRole9A545FB0",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
         },
-        "ManagedPolicyArns": [
+        "PolicyName": "PipelineRoleDefaultPolicy7BDC1ABB",
+        "Roles": [
           {
-            "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+            "Ref": "PipelineRoleB27FAA37"
           }
         ]
       },
       "Metadata": {
-        "aws:cdk:path": "FarmHarvestStack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role"
+        "aws:cdk:path": "FarmHarvestStack/Pipeline/Pipeline/Role/DefaultPolicy/Resource"
       }
     },
-    "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F": {
-      "Type": "AWS::Lambda::Function",
+    "Pipeline9850B417": {
+      "Type": "AWS::CodePipeline::Pipeline",
       "Properties": {
-        "Code": {
-          "S3Bucket": {
-            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-          },
-          "S3Key": "bdb08b9984816ecf43301a0c6d8913e270ee2448940b6b95e430dd222a4d90be.zip"
-        },
-        "Timeout": 900,
-        "MemorySize": 128,
-        "Handler": "__entrypoint__.handler",
-        "Role": {
+        "RoleArn": {
           "Fn::GetAtt": [
-            "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+            "PipelineRoleB27FAA37",
             "Arn"
           ]
         },
-        "Runtime": "nodejs12.x",
-        "Description": {
-          "Fn::Join": [
-            "",
-            [
-              "Lambda function for auto-deleting objects in ",
+        "Stages": [
+          {
+            "Actions": [
               {
-                "Ref": "MyFirstBucketB8884501"
+                "ActionTypeId": {
+                  "Category": "Source",
+                  "Owner": "ThirdParty",
+                  "Provider": "GitHub",
+                  "Version": "1"
+                },
+                "Configuration": {
+                  "Owner": "RoshyPlaha",
+                  "Repo": "farm-harvest",
+                  "Branch": "main",
+                  "OAuthToken": "{{resolve:secretsmanager:github-token:SecretString:::}}",
+                  "PollForSourceChanges": false
+                },
+                "Name": "RoshyPlaha_farm-harvest",
+                "OutputArtifacts": [
+                  {
+                    "Name": "RoshyPlaha_farm_harvest_Source"
+                  }
+                ],
+                "RunOrder": 1
+              }
+            ],
+            "Name": "Source"
+          },
+          {
+            "Actions": [
+              {
+                "ActionTypeId": {
+                  "Category": "Build",
+                  "Owner": "AWS",
+                  "Provider": "CodeBuild",
+                  "Version": "1"
+                },
+                "Configuration": {
+                  "ProjectName": {
+                    "Ref": "PipelineBuildSynthCdkBuildProject6BEFA8E6"
+                  },
+                  "EnvironmentVariables": "[{\"name\":\"_PROJECT_CONFIG_HASH\",\"type\":\"PLAINTEXT\",\"value\":\"00ebacfb32b1bde8d3638577308e7b7144dfa3b0a58a83bc6ff38a3b1f26951c\"}]"
+                },
+                "InputArtifacts": [
+                  {
+                    "Name": "RoshyPlaha_farm_harvest_Source"
+                  }
+                ],
+                "Name": "Synth",
+                "OutputArtifacts": [
+                  {
+                    "Name": "Synth_Output"
+                  }
+                ],
+                "RoleArn": {
+                  "Fn::GetAtt": [
+                    "PipelineBuildSynthCodePipelineActionRole4E7A6C97",
+                    "Arn"
+                  ]
+                },
+                "RunOrder": 1
+              }
+            ],
+            "Name": "Build"
+          },
+          {
+            "Actions": [
+              {
+                "ActionTypeId": {
+                  "Category": "Build",
+                  "Owner": "AWS",
+                  "Provider": "CodeBuild",
+                  "Version": "1"
+                },
+                "Configuration": {
+                  "ProjectName": {
+                    "Ref": "PipelineUpdatePipelineSelfMutationDAA41400"
+                  },
+                  "EnvironmentVariables": "[{\"name\":\"_PROJECT_CONFIG_HASH\",\"type\":\"PLAINTEXT\",\"value\":\"ea3a4d10caddbc609623ee7044b864a082f28e87542f9ded0a7f52e56af5ac08\"}]"
+                },
+                "InputArtifacts": [
+                  {
+                    "Name": "Synth_Output"
+                  }
+                ],
+                "Name": "SelfMutate",
+                "RoleArn": {
+                  "Fn::GetAtt": [
+                    "PipelineUpdatePipelineSelfMutateCodePipelineActionRoleD6D4E5CF",
+                    "Arn"
+                  ]
+                },
+                "RunOrder": 1
+              }
+            ],
+            "Name": "UpdatePipeline"
+          },
+          {
+            "Actions": [
+              {
+                "ActionTypeId": {
+                  "Category": "Build",
+                  "Owner": "AWS",
+                  "Provider": "CodeBuild",
+                  "Version": "1"
+                },
+                "Configuration": {
+                  "ProjectName": {
+                    "Ref": "PipelineAssetsFileAsset185A67CB4"
+                  }
+                },
+                "InputArtifacts": [
+                  {
+                    "Name": "Synth_Output"
+                  }
+                ],
+                "Name": "FileAsset1",
+                "RoleArn": {
+                  "Fn::GetAtt": [
+                    "PipelineAssetsFileAsset1CodePipelineActionRoleC0EC649A",
+                    "Arn"
+                  ]
+                },
+                "RunOrder": 1
+              }
+            ],
+            "Name": "Assets"
+          },
+          {
+            "Actions": [
+              {
+                "ActionTypeId": {
+                  "Category": "Deploy",
+                  "Owner": "AWS",
+                  "Provider": "CloudFormation",
+                  "Version": "1"
+                },
+                "Configuration": {
+                  "StackName": "InEnvironment-LambdaStack",
+                  "Capabilities": "CAPABILITY_NAMED_IAM,CAPABILITY_AUTO_EXPAND",
+                  "RoleArn": {
+                    "Fn::Join": [
+                      "",
+                      [
+                        "arn:",
+                        {
+                          "Ref": "AWS::Partition"
+                        },
+                        ":iam::",
+                        {
+                          "Ref": "AWS::AccountId"
+                        },
+                        ":role/cdk-hnb659fds-cfn-exec-role-",
+                        {
+                          "Ref": "AWS::AccountId"
+                        },
+                        "-",
+                        {
+                          "Ref": "AWS::Region"
+                        }
+                      ]
+                    ]
+                  },
+                  "ActionMode": "CHANGE_SET_REPLACE",
+                  "ChangeSetName": "PipelineChange",
+                  "TemplatePath": "Synth_Output::assembly-FarmHarvestStack-InEnvironment/FarmHarvestStackInEnvironmentLambdaStack7248ADCF.template.json"
+                },
+                "InputArtifacts": [
+                  {
+                    "Name": "Synth_Output"
+                  }
+                ],
+                "Name": "LambdaStack.Prepare",
+                "RoleArn": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":role/cdk-hnb659fds-deploy-role-",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      "-",
+                      {
+                        "Ref": "AWS::Region"
+                      }
+                    ]
+                  ]
+                },
+                "RunOrder": 1
               },
-              " S3 bucket."
-            ]
-          ]
-        }
+              {
+                "ActionTypeId": {
+                  "Category": "Deploy",
+                  "Owner": "AWS",
+                  "Provider": "CloudFormation",
+                  "Version": "1"
+                },
+                "Configuration": {
+                  "StackName": "InEnvironment-LambdaStack",
+                  "ActionMode": "CHANGE_SET_EXECUTE",
+                  "ChangeSetName": "PipelineChange"
+                },
+                "Name": "LambdaStack.Deploy",
+                "RoleArn": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":role/cdk-hnb659fds-deploy-role-",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      "-",
+                      {
+                        "Ref": "AWS::Region"
+                      }
+                    ]
+                  ]
+                },
+                "RunOrder": 2
+              },
+              {
+                "ActionTypeId": {
+                  "Category": "Approval",
+                  "Owner": "AWS",
+                  "Provider": "Manual",
+                  "Version": "1"
+                },
+                "Name": "Manual_approval_before_production",
+                "RoleArn": {
+                  "Fn::GetAtt": [
+                    "PipelineInEnvironmentManualapprovalbeforeproductionCodePipelineActionRole9A545FB0",
+                    "Arn"
+                  ]
+                },
+                "RunOrder": 3
+              }
+            ],
+            "Name": "InEnvironment"
+          }
+        ],
+        "ArtifactStore": {
+          "Location": {
+            "Ref": "PipelineArtifactsBucketAEA9A052"
+          },
+          "Type": "S3"
+        },
+        "Name": "TestPipeline",
+        "RestartExecutionOnUpdate": true
       },
       "DependsOn": [
-        "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+        "PipelineRoleDefaultPolicy7BDC1ABB",
+        "PipelineRoleB27FAA37"
       ],
       "Metadata": {
-        "aws:cdk:path": "FarmHarvestStack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler",
-        "aws:asset:path": "asset.bdb08b9984816ecf43301a0c6d8913e270ee2448940b6b95e430dd222a4d90be",
-        "aws:asset:property": "Code"
+        "aws:cdk:path": "FarmHarvestStack/Pipeline/Pipeline/Resource"
+      }
+    },
+    "PipelineSourceRoshyPlahafarmharvestWebhookResource31471D07": {
+      "Type": "AWS::CodePipeline::Webhook",
+      "Properties": {
+        "Authentication": "GITHUB_HMAC",
+        "AuthenticationConfiguration": {
+          "SecretToken": "{{resolve:secretsmanager:github-token:SecretString:::}}"
+        },
+        "Filters": [
+          {
+            "JsonPath": "$.ref",
+            "MatchEquals": "refs/heads/{Branch}"
+          }
+        ],
+        "TargetAction": "RoshyPlaha_farm-harvest",
+        "TargetPipeline": {
+          "Ref": "Pipeline9850B417"
+        },
+        "TargetPipelineVersion": 1,
+        "RegisterWithThirdParty": true
+      },
+      "Metadata": {
+        "aws:cdk:path": "FarmHarvestStack/Pipeline/Pipeline/Source/RoshyPlaha_farm-harvest/WebhookResource"
+      }
+    },
+    "PipelineBuildSynthCdkBuildProjectRole231EEA2A": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "codebuild.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "FarmHarvestStack/Pipeline/Pipeline/Build/Synth/CdkBuildProject/Role/Resource"
+      }
+    },
+    "PipelineBuildSynthCdkBuildProjectRoleDefaultPolicyFB6C941C": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "logs:CreateLogGroup",
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":logs:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":log-group:/aws/codebuild/",
+                      {
+                        "Ref": "PipelineBuildSynthCdkBuildProject6BEFA8E6"
+                      }
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":logs:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":log-group:/aws/codebuild/",
+                      {
+                        "Ref": "PipelineBuildSynthCdkBuildProject6BEFA8E6"
+                      },
+                      ":*"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": [
+                "codebuild:CreateReportGroup",
+                "codebuild:CreateReport",
+                "codebuild:UpdateReport",
+                "codebuild:BatchPutTestCases",
+                "codebuild:BatchPutCodeCoverages"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":codebuild:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":report-group/",
+                    {
+                      "Ref": "PipelineBuildSynthCdkBuildProject6BEFA8E6"
+                    },
+                    "-*"
+                  ]
+                ]
+              }
+            },
+            {
+              "Action": [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*",
+                "s3:DeleteObject*",
+                "s3:PutObject",
+                "s3:PutObjectLegalHold",
+                "s3:PutObjectRetention",
+                "s3:PutObjectTagging",
+                "s3:PutObjectVersionTagging",
+                "s3:Abort*"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "PipelineArtifactsBucketAEA9A052",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "PipelineArtifactsBucketAEA9A052",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "PipelineBuildSynthCdkBuildProjectRoleDefaultPolicyFB6C941C",
+        "Roles": [
+          {
+            "Ref": "PipelineBuildSynthCdkBuildProjectRole231EEA2A"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "FarmHarvestStack/Pipeline/Pipeline/Build/Synth/CdkBuildProject/Role/DefaultPolicy/Resource"
+      }
+    },
+    "PipelineBuildSynthCdkBuildProject6BEFA8E6": {
+      "Type": "AWS::CodeBuild::Project",
+      "Properties": {
+        "Artifacts": {
+          "Type": "CODEPIPELINE"
+        },
+        "Environment": {
+          "ComputeType": "BUILD_GENERAL1_SMALL",
+          "Image": "aws/codebuild/standard:5.0",
+          "ImagePullCredentialsType": "CODEBUILD",
+          "PrivilegedMode": false,
+          "Type": "LINUX_CONTAINER"
+        },
+        "ServiceRole": {
+          "Fn::GetAtt": [
+            "PipelineBuildSynthCdkBuildProjectRole231EEA2A",
+            "Arn"
+          ]
+        },
+        "Source": {
+          "BuildSpec": "{\n  \"version\": \"0.2\",\n  \"phases\": {\n    \"build\": {\n      \"commands\": [\n        \"npm ci\",\n        \"npm run build\",\n        \"npx cdk synth\"\n      ]\n    }\n  },\n  \"artifacts\": {\n    \"base-directory\": \"cdk.out\",\n    \"files\": \"**/*\"\n  }\n}",
+          "Type": "CODEPIPELINE"
+        },
+        "Cache": {
+          "Type": "NO_CACHE"
+        },
+        "Description": "Pipeline step FarmHarvestStack/Pipeline/Build/Synth",
+        "EncryptionKey": "alias/aws/s3"
+      },
+      "Metadata": {
+        "aws:cdk:path": "FarmHarvestStack/Pipeline/Pipeline/Build/Synth/CdkBuildProject/Resource"
+      }
+    },
+    "PipelineBuildSynthCodePipelineActionRole4E7A6C97": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":root"
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "FarmHarvestStack/Pipeline/Pipeline/Build/Synth/CodePipelineActionRole/Resource"
+      }
+    },
+    "PipelineBuildSynthCodePipelineActionRoleDefaultPolicy92C90290": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "codebuild:BatchGetBuilds",
+                "codebuild:StartBuild",
+                "codebuild:StopBuild"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "PipelineBuildSynthCdkBuildProject6BEFA8E6",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "PipelineBuildSynthCodePipelineActionRoleDefaultPolicy92C90290",
+        "Roles": [
+          {
+            "Ref": "PipelineBuildSynthCodePipelineActionRole4E7A6C97"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "FarmHarvestStack/Pipeline/Pipeline/Build/Synth/CodePipelineActionRole/DefaultPolicy/Resource"
+      }
+    },
+    "PipelineUpdatePipelineSelfMutateCodePipelineActionRoleD6D4E5CF": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":root"
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "FarmHarvestStack/Pipeline/Pipeline/UpdatePipeline/SelfMutate/CodePipelineActionRole/Resource"
+      }
+    },
+    "PipelineUpdatePipelineSelfMutateCodePipelineActionRoleDefaultPolicyE626265B": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "codebuild:BatchGetBuilds",
+                "codebuild:StartBuild",
+                "codebuild:StopBuild"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "PipelineUpdatePipelineSelfMutationDAA41400",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "PipelineUpdatePipelineSelfMutateCodePipelineActionRoleDefaultPolicyE626265B",
+        "Roles": [
+          {
+            "Ref": "PipelineUpdatePipelineSelfMutateCodePipelineActionRoleD6D4E5CF"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "FarmHarvestStack/Pipeline/Pipeline/UpdatePipeline/SelfMutate/CodePipelineActionRole/DefaultPolicy/Resource"
+      }
+    },
+    "PipelineAssetsFileAsset1CodePipelineActionRoleC0EC649A": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":root"
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "FarmHarvestStack/Pipeline/Pipeline/Assets/FileAsset1/CodePipelineActionRole/Resource"
+      }
+    },
+    "PipelineAssetsFileAsset1CodePipelineActionRoleDefaultPolicy5F0BE7E8": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "codebuild:BatchGetBuilds",
+                "codebuild:StartBuild",
+                "codebuild:StopBuild"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "PipelineAssetsFileAsset185A67CB4",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "PipelineAssetsFileAsset1CodePipelineActionRoleDefaultPolicy5F0BE7E8",
+        "Roles": [
+          {
+            "Ref": "PipelineAssetsFileAsset1CodePipelineActionRoleC0EC649A"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "FarmHarvestStack/Pipeline/Pipeline/Assets/FileAsset1/CodePipelineActionRole/DefaultPolicy/Resource"
+      }
+    },
+    "PipelineInEnvironmentManualapprovalbeforeproductionCodePipelineActionRole9A545FB0": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":root"
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "FarmHarvestStack/Pipeline/Pipeline/InEnvironment/Manual_approval_before_production/CodePipelineActionRole/Resource"
+      }
+    },
+    "PipelineUpdatePipelineSelfMutationRole57E559E8": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "codebuild.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "FarmHarvestStack/Pipeline/UpdatePipeline/SelfMutation/Role/Resource"
+      }
+    },
+    "PipelineUpdatePipelineSelfMutationRoleDefaultPolicyA225DA4E": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "logs:CreateLogGroup",
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":logs:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":log-group:/aws/codebuild/",
+                      {
+                        "Ref": "PipelineUpdatePipelineSelfMutationDAA41400"
+                      }
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":logs:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":log-group:/aws/codebuild/",
+                      {
+                        "Ref": "PipelineUpdatePipelineSelfMutationDAA41400"
+                      },
+                      ":*"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": [
+                "codebuild:CreateReportGroup",
+                "codebuild:CreateReport",
+                "codebuild:UpdateReport",
+                "codebuild:BatchPutTestCases",
+                "codebuild:BatchPutCodeCoverages"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":codebuild:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":report-group/",
+                    {
+                      "Ref": "PipelineUpdatePipelineSelfMutationDAA41400"
+                    },
+                    "-*"
+                  ]
+                ]
+              }
+            },
+            {
+              "Action": "sts:AssumeRole",
+              "Condition": {
+                "ForAnyValue:StringEquals": {
+                  "iam:ResourceTag/aws-cdk:bootstrap-role": [
+                    "image-publishing",
+                    "file-publishing",
+                    "deploy"
+                  ]
+                }
+              },
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:*:iam::",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":role/*"
+                  ]
+                ]
+              }
+            },
+            {
+              "Action": "cloudformation:DescribeStacks",
+              "Effect": "Allow",
+              "Resource": "*"
+            },
+            {
+              "Action": "s3:ListBucket",
+              "Effect": "Allow",
+              "Resource": "*"
+            },
+            {
+              "Action": [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "PipelineArtifactsBucketAEA9A052",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "PipelineArtifactsBucketAEA9A052",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "PipelineUpdatePipelineSelfMutationRoleDefaultPolicyA225DA4E",
+        "Roles": [
+          {
+            "Ref": "PipelineUpdatePipelineSelfMutationRole57E559E8"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "FarmHarvestStack/Pipeline/UpdatePipeline/SelfMutation/Role/DefaultPolicy/Resource"
+      }
+    },
+    "PipelineUpdatePipelineSelfMutationDAA41400": {
+      "Type": "AWS::CodeBuild::Project",
+      "Properties": {
+        "Artifacts": {
+          "Type": "CODEPIPELINE"
+        },
+        "Environment": {
+          "ComputeType": "BUILD_GENERAL1_SMALL",
+          "Image": "aws/codebuild/standard:5.0",
+          "ImagePullCredentialsType": "CODEBUILD",
+          "PrivilegedMode": false,
+          "Type": "LINUX_CONTAINER"
+        },
+        "ServiceRole": {
+          "Fn::GetAtt": [
+            "PipelineUpdatePipelineSelfMutationRole57E559E8",
+            "Arn"
+          ]
+        },
+        "Source": {
+          "BuildSpec": "{\n  \"version\": \"0.2\",\n  \"phases\": {\n    \"install\": {\n      \"commands\": [\n        \"npm install -g aws-cdk@2\"\n      ]\n    },\n    \"build\": {\n      \"commands\": [\n        \"cdk -a . deploy FarmHarvestStack --require-approval=never --verbose\"\n      ]\n    }\n  }\n}",
+          "Type": "CODEPIPELINE"
+        },
+        "Cache": {
+          "Type": "NO_CACHE"
+        },
+        "Description": "Pipeline step FarmHarvestStack/Pipeline/UpdatePipeline/SelfMutate",
+        "EncryptionKey": "alias/aws/s3",
+        "Name": "TestPipeline-selfupdate"
+      },
+      "Metadata": {
+        "aws:cdk:path": "FarmHarvestStack/Pipeline/UpdatePipeline/SelfMutation/Resource"
+      }
+    },
+    "PipelineAssetsFileRole59943A77": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "codebuild.amazonaws.com"
+              }
+            },
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":root"
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "FarmHarvestStack/Pipeline/Assets/FileRole/Resource"
+      }
+    },
+    "PipelineAssetsFileRoleDefaultPolicy14DB8755": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "logs:CreateLogGroup",
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":logs:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":log-group:/aws/codebuild/*"
+                  ]
+                ]
+              }
+            },
+            {
+              "Action": [
+                "codebuild:CreateReportGroup",
+                "codebuild:CreateReport",
+                "codebuild:UpdateReport",
+                "codebuild:BatchPutTestCases",
+                "codebuild:BatchPutCodeCoverages"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":codebuild:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":report-group/*"
+                  ]
+                ]
+              }
+            },
+            {
+              "Action": [
+                "codebuild:BatchGetBuilds",
+                "codebuild:StartBuild",
+                "codebuild:StopBuild"
+              ],
+              "Effect": "Allow",
+              "Resource": "*"
+            },
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::Sub": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+                }
+              ]
+            },
+            {
+              "Action": [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "PipelineArtifactsBucketAEA9A052",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "PipelineArtifactsBucketAEA9A052",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "PipelineAssetsFileRoleDefaultPolicy14DB8755",
+        "Roles": [
+          {
+            "Ref": "PipelineAssetsFileRole59943A77"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "FarmHarvestStack/Pipeline/Assets/FileRole/DefaultPolicy/Resource"
+      }
+    },
+    "PipelineAssetsFileAsset185A67CB4": {
+      "Type": "AWS::CodeBuild::Project",
+      "Properties": {
+        "Artifacts": {
+          "Type": "CODEPIPELINE"
+        },
+        "Environment": {
+          "ComputeType": "BUILD_GENERAL1_SMALL",
+          "Image": "aws/codebuild/standard:5.0",
+          "ImagePullCredentialsType": "CODEBUILD",
+          "PrivilegedMode": false,
+          "Type": "LINUX_CONTAINER"
+        },
+        "ServiceRole": {
+          "Fn::GetAtt": [
+            "PipelineAssetsFileRole59943A77",
+            "Arn"
+          ]
+        },
+        "Source": {
+          "BuildSpec": "{\n  \"version\": \"0.2\",\n  \"phases\": {\n    \"install\": {\n      \"commands\": [\n        \"npm install -g cdk-assets@2\"\n      ]\n    },\n    \"build\": {\n      \"commands\": [\n        \"cdk-assets --path \\\"assembly-FarmHarvestStack-InEnvironment/FarmHarvestStackInEnvironmentLambdaStack7248ADCF.assets.json\\\" --verbose publish \\\"373dc213db0531638952af9280c1b20389628bd343926eff86914dd577ea60e2:current_account-current_region\\\"\"\n      ]\n    }\n  }\n}",
+          "Type": "CODEPIPELINE"
+        },
+        "Cache": {
+          "Type": "NO_CACHE"
+        },
+        "Description": "Pipeline step FarmHarvestStack/Pipeline/Assets/FileAsset1",
+        "EncryptionKey": "alias/aws/s3"
+      },
+      "Metadata": {
+        "aws:cdk:path": "FarmHarvestStack/Pipeline/Assets/FileAsset1/Resource"
       }
     },
     "CDKMetadata": {
       "Type": "AWS::CDK::Metadata",
       "Properties": {
-        "Analytics": "v2:deflate64:H4sIAAAAAAAA/1VOSw6CMBA9i/t2FIy6Vi5A8AAG25EMhU7SaTGGcHchmBBX75u8l0N2gsOufos21umOnjDeY22cmq2HHGG8JeMwquLlf2yFkjsyn81e9aSKJJH7CoVTMLjkG/+LysADWQzqKoJx3mzIN0u/YG8pEvtJebYIreyH7ALn+WYrRDokH6lHqFb8ArUjUerCAAAA"
+        "Analytics": "v2:deflate64:H4sIAAAAAAAA/01Qyw6CMBD8Fu9lfUW9yw8QPHg0UGpcWrqEthrT9N8tL+E0s7OT2ckeYH+C3ab4mIRXMlFYgr/ZgkvWYisUamEgpUpk08Si8+F5VOY9+P8ufeo1v4vyRSQDM0fwV8elsL08sREyUsi/izzOgWHRgM9JDUEDLs7Z07coHapqqZB1VAs+nJloCCwXhlzHx6gVT0lXaJF0YDpGQW227/0FzvEftUFMOqctNgLyEX86/nNjKwEAAA=="
       },
       "Metadata": {
         "aws:cdk:path": "FarmHarvestStack/CDKMetadata/Default"

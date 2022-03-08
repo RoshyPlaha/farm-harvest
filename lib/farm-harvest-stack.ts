@@ -1,14 +1,15 @@
 import { Stack, StackProps } from 'aws-cdk-lib';
-import { CodePipelineSource, ShellStep, CodePipeline as codepipeline } from 'aws-cdk-lib/pipelines';
+import { CodePipelineSource, ShellStep, CodePipeline as codepipeline, ManualApprovalStep } from 'aws-cdk-lib/pipelines';
 
 import { Construct } from 'constructs';
+import { MyPipelineAppStage } from './stage';
 
 export class FarmHarvestStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    new codepipeline(this, 'MyFirstPipeline', {
-      pipelineName: 'MyFirstPipeline',
+    const pipeline = new codepipeline(this, 'Pipeline', {
+      pipelineName: 'TestPipeline',
       synth: new ShellStep('Synth', {
         input: CodePipelineSource.gitHub('RoshyPlaha/farm-harvest', 'main'),
         commands: [
@@ -17,6 +18,17 @@ export class FarmHarvestStack extends Stack {
           'npx cdk synth'
         ]
       })
-    })
+    });
+
+  
+    
+    const testingStage = pipeline.addStage(new MyPipelineAppStage(this, 'InEnvironment'));
+
+
+
+    testingStage.addPost(new ManualApprovalStep('Manual approval before production'));
+
+
   }
+
 }

@@ -1,0 +1,32 @@
+{
+  "version": "16.0.0",
+  "files": {
+    "373dc213db0531638952af9280c1b20389628bd343926eff86914dd577ea60e2": {
+      "source": {
+        "path": "../asset.373dc213db0531638952af9280c1b20389628bd343926eff86914dd577ea60e2",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "373dc213db0531638952af9280c1b20389628bd343926eff86914dd577ea60e2.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "a48abacff3367800d71cad8295f4dc141fe64abab650da4dd86be913ad82c5d2": {
+      "source": {
+        "path": "FarmHarvestStackInEnvironmentLambdaStack7248ADCF.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "a48abacff3367800d71cad8295f4dc141fe64abab650da4dd86be913ad82c5d2.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
