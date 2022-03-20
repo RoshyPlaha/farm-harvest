@@ -8,6 +8,13 @@
         "displayName": "FarmHarvestStack/InEnvironment"
       }
     },
+    "assembly-FarmHarvestStack-ECSEnvironment": {
+      "type": "cdk:cloud-assembly",
+      "properties": {
+        "directoryName": "assembly-FarmHarvestStack-ECSEnvironment",
+        "displayName": "FarmHarvestStack/ECSEnvironment"
+      }
+    },
     "Tree": {
       "type": "cdk:tree",
       "properties": {
@@ -30,7 +37,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9fd23bf518abf13c20eaae7d8431b20e9de466021eba0af39bd840bbe6342341.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6584409808e02dc852236538c9ffc32ecf8b45930f3ae24e44e40d589cc15c74.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -124,6 +131,18 @@
             "data": "PipelineUpdatePipelineSelfMutateCodePipelineActionRoleDefaultPolicyE626265B"
           }
         ],
+        "/FarmHarvestStack/Pipeline/Pipeline/Assets/DockerAsset1/CodePipelineActionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineAssetsDockerAsset1CodePipelineActionRole7ED54263"
+          }
+        ],
+        "/FarmHarvestStack/Pipeline/Pipeline/Assets/DockerAsset1/CodePipelineActionRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineAssetsDockerAsset1CodePipelineActionRoleDefaultPolicy023CD59D"
+          }
+        ],
         "/FarmHarvestStack/Pipeline/Pipeline/Assets/FileAsset1/CodePipelineActionRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -134,12 +153,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "PipelineAssetsFileAsset1CodePipelineActionRoleDefaultPolicy5F0BE7E8"
-          }
-        ],
-        "/FarmHarvestStack/Pipeline/Pipeline/InEnvironment/Manual_approval_before_production/CodePipelineActionRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PipelineInEnvironmentManualapprovalbeforeproductionCodePipelineActionRole9A545FB0"
           }
         ],
         "/FarmHarvestStack/Pipeline/UpdatePipeline/SelfMutation/Role/Resource": [
@@ -158,6 +171,24 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "PipelineUpdatePipelineSelfMutationDAA41400"
+          }
+        ],
+        "/FarmHarvestStack/Pipeline/Assets/DockerRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineAssetsDockerRole8BB4542E"
+          }
+        ],
+        "/FarmHarvestStack/Pipeline/Assets/DockerRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineAssetsDockerRoleDefaultPolicy8B63511D"
+          }
+        ],
+        "/FarmHarvestStack/Pipeline/Assets/DockerAsset1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineAssetsDockerAsset1D66D1104"
           }
         ],
         "/FarmHarvestStack/Pipeline/Assets/FileRole/Resource": [

@@ -285,6 +285,16 @@
                                       "Effect": "Allow",
                                       "Resource": {
                                         "Fn::GetAtt": [
+                                          "PipelineAssetsDockerAsset1CodePipelineActionRole7ED54263",
+                                          "Arn"
+                                        ]
+                                      }
+                                    },
+                                    {
+                                      "Action": "sts:AssumeRole",
+                                      "Effect": "Allow",
+                                      "Resource": {
+                                        "Fn::GetAtt": [
                                           "PipelineAssetsFileAsset1CodePipelineActionRoleC0EC649A",
                                           "Arn"
                                         ]
@@ -314,16 +324,6 @@
                                               "Ref": "AWS::Region"
                                             }
                                           ]
-                                        ]
-                                      }
-                                    },
-                                    {
-                                      "Action": "sts:AssumeRole",
-                                      "Effect": "Allow",
-                                      "Resource": {
-                                        "Fn::GetAtt": [
-                                          "PipelineInEnvironmentManualapprovalbeforeproductionCodePipelineActionRole9A545FB0",
-                                          "Arn"
                                         ]
                                       }
                                     }
@@ -468,6 +468,32 @@
                             "name": "Assets",
                             "actions": [
                               {
+                                "name": "DockerAsset1",
+                                "inputArtifacts": [
+                                  {
+                                    "name": "Synth_Output"
+                                  }
+                                ],
+                                "actionTypeId": {
+                                  "category": "Build",
+                                  "version": "1",
+                                  "owner": "AWS",
+                                  "provider": "CodeBuild"
+                                },
+                                "configuration": {
+                                  "ProjectName": {
+                                    "Ref": "PipelineAssetsDockerAsset1D66D1104"
+                                  }
+                                },
+                                "runOrder": 1,
+                                "roleArn": {
+                                  "Fn::GetAtt": [
+                                    "PipelineAssetsDockerAsset1CodePipelineActionRole7ED54263",
+                                    "Arn"
+                                  ]
+                                }
+                              },
+                              {
                                 "name": "FileAsset1",
                                 "inputArtifacts": [
                                   {
@@ -499,7 +525,7 @@
                             "name": "InEnvironment",
                             "actions": [
                               {
-                                "name": "LambdaStack.Prepare",
+                                "name": "Prepare",
                                 "inputArtifacts": [
                                   {
                                     "name": "Synth_Output"
@@ -567,7 +593,7 @@
                                 }
                               },
                               {
-                                "name": "LambdaStack.Deploy",
+                                "name": "Deploy",
                                 "actionTypeId": {
                                   "category": "Deploy",
                                   "version": "1",
@@ -603,20 +629,115 @@
                                     ]
                                   ]
                                 }
-                              },
+                              }
+                            ]
+                          },
+                          {
+                            "name": "ECSEnvironment",
+                            "actions": [
                               {
-                                "name": "Manual_approval_before_production",
+                                "name": "Prepare",
+                                "inputArtifacts": [
+                                  {
+                                    "name": "Synth_Output"
+                                  }
+                                ],
                                 "actionTypeId": {
-                                  "category": "Approval",
+                                  "category": "Deploy",
                                   "version": "1",
                                   "owner": "AWS",
-                                  "provider": "Manual"
+                                  "provider": "CloudFormation"
                                 },
-                                "runOrder": 3,
+                                "configuration": {
+                                  "StackName": "ECSEnvironment-ECSFargateStack",
+                                  "Capabilities": "CAPABILITY_NAMED_IAM,CAPABILITY_AUTO_EXPAND",
+                                  "RoleArn": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":iam::",
+                                        {
+                                          "Ref": "AWS::AccountId"
+                                        },
+                                        ":role/cdk-hnb659fds-cfn-exec-role-",
+                                        {
+                                          "Ref": "AWS::AccountId"
+                                        },
+                                        "-",
+                                        {
+                                          "Ref": "AWS::Region"
+                                        }
+                                      ]
+                                    ]
+                                  },
+                                  "ActionMode": "CHANGE_SET_REPLACE",
+                                  "ChangeSetName": "PipelineChange",
+                                  "TemplatePath": "Synth_Output::assembly-FarmHarvestStack-ECSEnvironment/FarmHarvestStackECSEnvironmentECSFargateStackC0514115.template.json"
+                                },
+                                "runOrder": 1,
                                 "roleArn": {
-                                  "Fn::GetAtt": [
-                                    "PipelineInEnvironmentManualapprovalbeforeproductionCodePipelineActionRole9A545FB0",
-                                    "Arn"
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      "arn:",
+                                      {
+                                        "Ref": "AWS::Partition"
+                                      },
+                                      ":iam::",
+                                      {
+                                        "Ref": "AWS::AccountId"
+                                      },
+                                      ":role/cdk-hnb659fds-deploy-role-",
+                                      {
+                                        "Ref": "AWS::AccountId"
+                                      },
+                                      "-",
+                                      {
+                                        "Ref": "AWS::Region"
+                                      }
+                                    ]
+                                  ]
+                                }
+                              },
+                              {
+                                "name": "Deploy",
+                                "actionTypeId": {
+                                  "category": "Deploy",
+                                  "version": "1",
+                                  "owner": "AWS",
+                                  "provider": "CloudFormation"
+                                },
+                                "configuration": {
+                                  "StackName": "ECSEnvironment-ECSFargateStack",
+                                  "ActionMode": "CHANGE_SET_EXECUTE",
+                                  "ChangeSetName": "PipelineChange"
+                                },
+                                "runOrder": 2,
+                                "roleArn": {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      "arn:",
+                                      {
+                                        "Ref": "AWS::Partition"
+                                      },
+                                      ":iam::",
+                                      {
+                                        "Ref": "AWS::AccountId"
+                                      },
+                                      ":role/cdk-hnb659fds-deploy-role-",
+                                      {
+                                        "Ref": "AWS::AccountId"
+                                      },
+                                      "-",
+                                      {
+                                        "Ref": "AWS::Region"
+                                      }
+                                    ]
                                   ]
                                 }
                               }
@@ -1172,6 +1293,114 @@
                     "id": "Assets",
                     "path": "FarmHarvestStack/Pipeline/Pipeline/Assets",
                     "children": {
+                      "DockerAsset1": {
+                        "id": "DockerAsset1",
+                        "path": "FarmHarvestStack/Pipeline/Pipeline/Assets/DockerAsset1",
+                        "children": {
+                          "CodePipelineActionRole": {
+                            "id": "CodePipelineActionRole",
+                            "path": "FarmHarvestStack/Pipeline/Pipeline/Assets/DockerAsset1/CodePipelineActionRole",
+                            "children": {
+                              "Resource": {
+                                "id": "Resource",
+                                "path": "FarmHarvestStack/Pipeline/Pipeline/Assets/DockerAsset1/CodePipelineActionRole/Resource",
+                                "attributes": {
+                                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                                  "aws:cdk:cloudformation:props": {
+                                    "assumeRolePolicyDocument": {
+                                      "Statement": [
+                                        {
+                                          "Action": "sts:AssumeRole",
+                                          "Effect": "Allow",
+                                          "Principal": {
+                                            "AWS": {
+                                              "Fn::Join": [
+                                                "",
+                                                [
+                                                  "arn:",
+                                                  {
+                                                    "Ref": "AWS::Partition"
+                                                  },
+                                                  ":iam::",
+                                                  {
+                                                    "Ref": "AWS::AccountId"
+                                                  },
+                                                  ":root"
+                                                ]
+                                              ]
+                                            }
+                                          }
+                                        }
+                                      ],
+                                      "Version": "2012-10-17"
+                                    }
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                                  "version": "2.15.0"
+                                }
+                              },
+                              "DefaultPolicy": {
+                                "id": "DefaultPolicy",
+                                "path": "FarmHarvestStack/Pipeline/Pipeline/Assets/DockerAsset1/CodePipelineActionRole/DefaultPolicy",
+                                "children": {
+                                  "Resource": {
+                                    "id": "Resource",
+                                    "path": "FarmHarvestStack/Pipeline/Pipeline/Assets/DockerAsset1/CodePipelineActionRole/DefaultPolicy/Resource",
+                                    "attributes": {
+                                      "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                                      "aws:cdk:cloudformation:props": {
+                                        "policyDocument": {
+                                          "Statement": [
+                                            {
+                                              "Action": [
+                                                "codebuild:BatchGetBuilds",
+                                                "codebuild:StartBuild",
+                                                "codebuild:StopBuild"
+                                              ],
+                                              "Effect": "Allow",
+                                              "Resource": {
+                                                "Fn::GetAtt": [
+                                                  "PipelineAssetsDockerAsset1D66D1104",
+                                                  "Arn"
+                                                ]
+                                              }
+                                            }
+                                          ],
+                                          "Version": "2012-10-17"
+                                        },
+                                        "policyName": "PipelineAssetsDockerAsset1CodePipelineActionRoleDefaultPolicy023CD59D",
+                                        "roles": [
+                                          {
+                                            "Ref": "PipelineAssetsDockerAsset1CodePipelineActionRole7ED54263"
+                                          }
+                                        ]
+                                      }
+                                    },
+                                    "constructInfo": {
+                                      "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                                      "version": "2.15.0"
+                                    }
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.aws_iam.Policy",
+                                  "version": "2.15.0"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_iam.Role",
+                              "version": "2.15.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.0.76"
+                        }
+                      },
                       "FileAsset1": {
                         "id": "FileAsset1",
                         "path": "FarmHarvestStack/Pipeline/Pipeline/Assets/FileAsset1",
@@ -1290,77 +1519,17 @@
                     "id": "InEnvironment",
                     "path": "FarmHarvestStack/Pipeline/Pipeline/InEnvironment",
                     "children": {
-                      "LambdaStack.Prepare": {
-                        "id": "LambdaStack.Prepare",
-                        "path": "FarmHarvestStack/Pipeline/Pipeline/InEnvironment/LambdaStack.Prepare",
+                      "Prepare": {
+                        "id": "Prepare",
+                        "path": "FarmHarvestStack/Pipeline/Pipeline/InEnvironment/Prepare",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
                           "version": "10.0.76"
                         }
                       },
-                      "LambdaStack.Deploy": {
-                        "id": "LambdaStack.Deploy",
-                        "path": "FarmHarvestStack/Pipeline/Pipeline/InEnvironment/LambdaStack.Deploy",
-                        "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.0.76"
-                        }
-                      },
-                      "Manual_approval_before_production": {
-                        "id": "Manual_approval_before_production",
-                        "path": "FarmHarvestStack/Pipeline/Pipeline/InEnvironment/Manual_approval_before_production",
-                        "children": {
-                          "CodePipelineActionRole": {
-                            "id": "CodePipelineActionRole",
-                            "path": "FarmHarvestStack/Pipeline/Pipeline/InEnvironment/Manual_approval_before_production/CodePipelineActionRole",
-                            "children": {
-                              "Resource": {
-                                "id": "Resource",
-                                "path": "FarmHarvestStack/Pipeline/Pipeline/InEnvironment/Manual_approval_before_production/CodePipelineActionRole/Resource",
-                                "attributes": {
-                                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
-                                  "aws:cdk:cloudformation:props": {
-                                    "assumeRolePolicyDocument": {
-                                      "Statement": [
-                                        {
-                                          "Action": "sts:AssumeRole",
-                                          "Effect": "Allow",
-                                          "Principal": {
-                                            "AWS": {
-                                              "Fn::Join": [
-                                                "",
-                                                [
-                                                  "arn:",
-                                                  {
-                                                    "Ref": "AWS::Partition"
-                                                  },
-                                                  ":iam::",
-                                                  {
-                                                    "Ref": "AWS::AccountId"
-                                                  },
-                                                  ":root"
-                                                ]
-                                              ]
-                                            }
-                                          }
-                                        }
-                                      ],
-                                      "Version": "2012-10-17"
-                                    }
-                                  }
-                                },
-                                "constructInfo": {
-                                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                                  "version": "2.15.0"
-                                }
-                              }
-                            },
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_iam.Role",
-                              "version": "2.15.0"
-                            }
-                          }
-                        },
+                      "Deploy": {
+                        "id": "Deploy",
+                        "path": "FarmHarvestStack/Pipeline/Pipeline/InEnvironment/Deploy",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
                           "version": "10.0.76"
@@ -1412,6 +1581,32 @@
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "2.15.0"
+                    }
+                  },
+                  "ECSEnvironment": {
+                    "id": "ECSEnvironment",
+                    "path": "FarmHarvestStack/Pipeline/Pipeline/ECSEnvironment",
+                    "children": {
+                      "Prepare": {
+                        "id": "Prepare",
+                        "path": "FarmHarvestStack/Pipeline/Pipeline/ECSEnvironment/Prepare",
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.0.76"
+                        }
+                      },
+                      "Deploy": {
+                        "id": "Deploy",
+                        "path": "FarmHarvestStack/Pipeline/Pipeline/ECSEnvironment/Deploy",
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.0.76"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.0.76"
                     }
                   }
                 },
@@ -1708,6 +1903,251 @@
                 "id": "Assets",
                 "path": "FarmHarvestStack/Pipeline/Assets",
                 "children": {
+                  "DockerRole": {
+                    "id": "DockerRole",
+                    "path": "FarmHarvestStack/Pipeline/Assets/DockerRole",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "FarmHarvestStack/Pipeline/Assets/DockerRole/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                          "aws:cdk:cloudformation:props": {
+                            "assumeRolePolicyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "sts:AssumeRole",
+                                  "Effect": "Allow",
+                                  "Principal": {
+                                    "Service": "codebuild.amazonaws.com"
+                                  }
+                                },
+                                {
+                                  "Action": "sts:AssumeRole",
+                                  "Effect": "Allow",
+                                  "Principal": {
+                                    "AWS": {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          "arn:",
+                                          {
+                                            "Ref": "AWS::Partition"
+                                          },
+                                          ":iam::",
+                                          {
+                                            "Ref": "AWS::AccountId"
+                                          },
+                                          ":root"
+                                        ]
+                                      ]
+                                    }
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                          "version": "2.15.0"
+                        }
+                      },
+                      "DefaultPolicy": {
+                        "id": "DefaultPolicy",
+                        "path": "FarmHarvestStack/Pipeline/Assets/DockerRole/DefaultPolicy",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "FarmHarvestStack/Pipeline/Assets/DockerRole/DefaultPolicy/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                              "aws:cdk:cloudformation:props": {
+                                "policyDocument": {
+                                  "Statement": [
+                                    {
+                                      "Action": [
+                                        "logs:CreateLogGroup",
+                                        "logs:CreateLogStream",
+                                        "logs:PutLogEvents"
+                                      ],
+                                      "Effect": "Allow",
+                                      "Resource": {
+                                        "Fn::Join": [
+                                          "",
+                                          [
+                                            "arn:",
+                                            {
+                                              "Ref": "AWS::Partition"
+                                            },
+                                            ":logs:",
+                                            {
+                                              "Ref": "AWS::Region"
+                                            },
+                                            ":",
+                                            {
+                                              "Ref": "AWS::AccountId"
+                                            },
+                                            ":log-group:/aws/codebuild/*"
+                                          ]
+                                        ]
+                                      }
+                                    },
+                                    {
+                                      "Action": [
+                                        "codebuild:CreateReportGroup",
+                                        "codebuild:CreateReport",
+                                        "codebuild:UpdateReport",
+                                        "codebuild:BatchPutTestCases",
+                                        "codebuild:BatchPutCodeCoverages"
+                                      ],
+                                      "Effect": "Allow",
+                                      "Resource": {
+                                        "Fn::Join": [
+                                          "",
+                                          [
+                                            "arn:",
+                                            {
+                                              "Ref": "AWS::Partition"
+                                            },
+                                            ":codebuild:",
+                                            {
+                                              "Ref": "AWS::Region"
+                                            },
+                                            ":",
+                                            {
+                                              "Ref": "AWS::AccountId"
+                                            },
+                                            ":report-group/*"
+                                          ]
+                                        ]
+                                      }
+                                    },
+                                    {
+                                      "Action": [
+                                        "codebuild:BatchGetBuilds",
+                                        "codebuild:StartBuild",
+                                        "codebuild:StopBuild"
+                                      ],
+                                      "Effect": "Allow",
+                                      "Resource": "*"
+                                    },
+                                    {
+                                      "Action": "sts:AssumeRole",
+                                      "Effect": "Allow",
+                                      "Resource": [
+                                        {
+                                          "Fn::Sub": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-image-publishing-role-${AWS::AccountId}-${AWS::Region}"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "Action": [
+                                        "s3:GetObject*",
+                                        "s3:GetBucket*",
+                                        "s3:List*"
+                                      ],
+                                      "Effect": "Allow",
+                                      "Resource": [
+                                        {
+                                          "Fn::GetAtt": [
+                                            "PipelineArtifactsBucketAEA9A052",
+                                            "Arn"
+                                          ]
+                                        },
+                                        {
+                                          "Fn::Join": [
+                                            "",
+                                            [
+                                              {
+                                                "Fn::GetAtt": [
+                                                  "PipelineArtifactsBucketAEA9A052",
+                                                  "Arn"
+                                                ]
+                                              },
+                                              "/*"
+                                            ]
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ],
+                                  "Version": "2012-10-17"
+                                },
+                                "policyName": "PipelineAssetsDockerRoleDefaultPolicy8B63511D",
+                                "roles": [
+                                  {
+                                    "Ref": "PipelineAssetsDockerRole8BB4542E"
+                                  }
+                                ]
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                              "version": "2.15.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.Policy",
+                          "version": "2.15.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Role",
+                      "version": "2.15.0"
+                    }
+                  },
+                  "DockerAsset1": {
+                    "id": "DockerAsset1",
+                    "path": "FarmHarvestStack/Pipeline/Assets/DockerAsset1",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "FarmHarvestStack/Pipeline/Assets/DockerAsset1/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::CodeBuild::Project",
+                          "aws:cdk:cloudformation:props": {
+                            "artifacts": {
+                              "type": "CODEPIPELINE"
+                            },
+                            "environment": {
+                              "type": "LINUX_CONTAINER",
+                              "image": "aws/codebuild/standard:5.0",
+                              "imagePullCredentialsType": "CODEBUILD",
+                              "privilegedMode": true,
+                              "computeType": "BUILD_GENERAL1_SMALL"
+                            },
+                            "serviceRole": {
+                              "Fn::GetAtt": [
+                                "PipelineAssetsDockerRole8BB4542E",
+                                "Arn"
+                              ]
+                            },
+                            "source": {
+                              "type": "CODEPIPELINE",
+                              "buildSpec": "{\n  \"version\": \"0.2\",\n  \"phases\": {\n    \"install\": {\n      \"commands\": [\n        \"npm install -g cdk-assets@2\"\n      ]\n    },\n    \"build\": {\n      \"commands\": [\n        \"cdk-assets --path \\\"assembly-FarmHarvestStack-ECSEnvironment/FarmHarvestStackECSEnvironmentECSFargateStackC0514115.assets.json\\\" --verbose publish \\\"222e9a8c64b30fc38eb64c2928ed7642af51766e6432b31a861aab799a0e0ff8:current_account-current_region\\\"\"\n      ]\n    }\n  }\n}"
+                            },
+                            "cache": {
+                              "type": "NO_CACHE"
+                            },
+                            "description": "Pipeline step FarmHarvestStack/Pipeline/Assets/DockerAsset1",
+                            "encryptionKey": "alias/aws/s3"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_codebuild.CfnProject",
+                          "version": "2.15.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_codebuild.PipelineProject",
+                      "version": "2.15.0"
+                    }
+                  },
                   "FileRole": {
                     "id": "FileRole",
                     "path": "FarmHarvestStack/Pipeline/Assets/FileRole",
@@ -2127,6 +2567,1319 @@
                   "CheckBootstrapVersion": {
                     "id": "CheckBootstrapVersion",
                     "path": "FarmHarvestStack/InEnvironment/LambdaStack/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "2.15.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "2.15.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.Stage",
+              "version": "2.15.0"
+            }
+          },
+          "ECSEnvironment": {
+            "id": "ECSEnvironment",
+            "path": "FarmHarvestStack/ECSEnvironment",
+            "children": {
+              "ECSFargateStack": {
+                "id": "ECSFargateStack",
+                "path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack",
+                "children": {
+                  "MyVPC": {
+                    "id": "MyVPC",
+                    "path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::EC2::VPC",
+                          "aws:cdk:cloudformation:props": {
+                            "cidrBlock": "10.0.0.0/16",
+                            "enableDnsHostnames": true,
+                            "enableDnsSupport": true,
+                            "instanceTenancy": "default",
+                            "tags": [
+                              {
+                                "key": "Name",
+                                "value": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnVPC",
+                          "version": "2.15.0"
+                        }
+                      },
+                      "PublicSubnet1": {
+                        "id": "PublicSubnet1",
+                        "path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC/PublicSubnet1",
+                        "children": {
+                          "Subnet": {
+                            "id": "Subnet",
+                            "path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC/PublicSubnet1/Subnet",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
+                              "aws:cdk:cloudformation:props": {
+                                "cidrBlock": "10.0.0.0/18",
+                                "vpcId": {
+                                  "Ref": "MyVPCAFB07A31"
+                                },
+                                "availabilityZone": {
+                                  "Fn::Select": [
+                                    0,
+                                    {
+                                      "Fn::GetAZs": ""
+                                    }
+                                  ]
+                                },
+                                "mapPublicIpOnLaunch": true,
+                                "tags": [
+                                  {
+                                    "key": "aws-cdk:subnet-name",
+                                    "value": "Public"
+                                  },
+                                  {
+                                    "key": "aws-cdk:subnet-type",
+                                    "value": "Public"
+                                  },
+                                  {
+                                    "key": "Name",
+                                    "value": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC/PublicSubnet1"
+                                  }
+                                ]
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
+                              "version": "2.15.0"
+                            }
+                          },
+                          "Acl": {
+                            "id": "Acl",
+                            "path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC/PublicSubnet1/Acl",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.Resource",
+                              "version": "2.15.0"
+                            }
+                          },
+                          "RouteTable": {
+                            "id": "RouteTable",
+                            "path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC/PublicSubnet1/RouteTable",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
+                              "aws:cdk:cloudformation:props": {
+                                "vpcId": {
+                                  "Ref": "MyVPCAFB07A31"
+                                },
+                                "tags": [
+                                  {
+                                    "key": "Name",
+                                    "value": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC/PublicSubnet1"
+                                  }
+                                ]
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
+                              "version": "2.15.0"
+                            }
+                          },
+                          "RouteTableAssociation": {
+                            "id": "RouteTableAssociation",
+                            "path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC/PublicSubnet1/RouteTableAssociation",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
+                              "aws:cdk:cloudformation:props": {
+                                "routeTableId": {
+                                  "Ref": "MyVPCPublicSubnet1RouteTable538A9511"
+                                },
+                                "subnetId": {
+                                  "Ref": "MyVPCPublicSubnet1Subnet0C75866A"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
+                              "version": "2.15.0"
+                            }
+                          },
+                          "DefaultRoute": {
+                            "id": "DefaultRoute",
+                            "path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC/PublicSubnet1/DefaultRoute",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::EC2::Route",
+                              "aws:cdk:cloudformation:props": {
+                                "routeTableId": {
+                                  "Ref": "MyVPCPublicSubnet1RouteTable538A9511"
+                                },
+                                "destinationCidrBlock": "0.0.0.0/0",
+                                "gatewayId": {
+                                  "Ref": "MyVPCIGW30AB6DD6"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
+                              "version": "2.15.0"
+                            }
+                          },
+                          "EIP": {
+                            "id": "EIP",
+                            "path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC/PublicSubnet1/EIP",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::EC2::EIP",
+                              "aws:cdk:cloudformation:props": {
+                                "domain": "vpc",
+                                "tags": [
+                                  {
+                                    "key": "Name",
+                                    "value": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC/PublicSubnet1"
+                                  }
+                                ]
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_ec2.CfnEIP",
+                              "version": "2.15.0"
+                            }
+                          },
+                          "NATGateway": {
+                            "id": "NATGateway",
+                            "path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC/PublicSubnet1/NATGateway",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
+                              "aws:cdk:cloudformation:props": {
+                                "subnetId": {
+                                  "Ref": "MyVPCPublicSubnet1Subnet0C75866A"
+                                },
+                                "allocationId": {
+                                  "Fn::GetAtt": [
+                                    "MyVPCPublicSubnet1EIP5EB6147D",
+                                    "AllocationId"
+                                  ]
+                                },
+                                "tags": [
+                                  {
+                                    "key": "Name",
+                                    "value": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC/PublicSubnet1"
+                                  }
+                                ]
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_ec2.CfnNatGateway",
+                              "version": "2.15.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_ec2.PublicSubnet",
+                          "version": "2.15.0"
+                        }
+                      },
+                      "PublicSubnet2": {
+                        "id": "PublicSubnet2",
+                        "path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC/PublicSubnet2",
+                        "children": {
+                          "Subnet": {
+                            "id": "Subnet",
+                            "path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC/PublicSubnet2/Subnet",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
+                              "aws:cdk:cloudformation:props": {
+                                "cidrBlock": "10.0.64.0/18",
+                                "vpcId": {
+                                  "Ref": "MyVPCAFB07A31"
+                                },
+                                "availabilityZone": {
+                                  "Fn::Select": [
+                                    1,
+                                    {
+                                      "Fn::GetAZs": ""
+                                    }
+                                  ]
+                                },
+                                "mapPublicIpOnLaunch": true,
+                                "tags": [
+                                  {
+                                    "key": "aws-cdk:subnet-name",
+                                    "value": "Public"
+                                  },
+                                  {
+                                    "key": "aws-cdk:subnet-type",
+                                    "value": "Public"
+                                  },
+                                  {
+                                    "key": "Name",
+                                    "value": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC/PublicSubnet2"
+                                  }
+                                ]
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
+                              "version": "2.15.0"
+                            }
+                          },
+                          "Acl": {
+                            "id": "Acl",
+                            "path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC/PublicSubnet2/Acl",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.Resource",
+                              "version": "2.15.0"
+                            }
+                          },
+                          "RouteTable": {
+                            "id": "RouteTable",
+                            "path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC/PublicSubnet2/RouteTable",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
+                              "aws:cdk:cloudformation:props": {
+                                "vpcId": {
+                                  "Ref": "MyVPCAFB07A31"
+                                },
+                                "tags": [
+                                  {
+                                    "key": "Name",
+                                    "value": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC/PublicSubnet2"
+                                  }
+                                ]
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
+                              "version": "2.15.0"
+                            }
+                          },
+                          "RouteTableAssociation": {
+                            "id": "RouteTableAssociation",
+                            "path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC/PublicSubnet2/RouteTableAssociation",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
+                              "aws:cdk:cloudformation:props": {
+                                "routeTableId": {
+                                  "Ref": "MyVPCPublicSubnet2RouteTableA6A1CD3D"
+                                },
+                                "subnetId": {
+                                  "Ref": "MyVPCPublicSubnet2Subnet4DDFF14C"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
+                              "version": "2.15.0"
+                            }
+                          },
+                          "DefaultRoute": {
+                            "id": "DefaultRoute",
+                            "path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC/PublicSubnet2/DefaultRoute",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::EC2::Route",
+                              "aws:cdk:cloudformation:props": {
+                                "routeTableId": {
+                                  "Ref": "MyVPCPublicSubnet2RouteTableA6A1CD3D"
+                                },
+                                "destinationCidrBlock": "0.0.0.0/0",
+                                "gatewayId": {
+                                  "Ref": "MyVPCIGW30AB6DD6"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
+                              "version": "2.15.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_ec2.PublicSubnet",
+                          "version": "2.15.0"
+                        }
+                      },
+                      "PrivateSubnet1": {
+                        "id": "PrivateSubnet1",
+                        "path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC/PrivateSubnet1",
+                        "children": {
+                          "Subnet": {
+                            "id": "Subnet",
+                            "path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC/PrivateSubnet1/Subnet",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
+                              "aws:cdk:cloudformation:props": {
+                                "cidrBlock": "10.0.128.0/18",
+                                "vpcId": {
+                                  "Ref": "MyVPCAFB07A31"
+                                },
+                                "availabilityZone": {
+                                  "Fn::Select": [
+                                    0,
+                                    {
+                                      "Fn::GetAZs": ""
+                                    }
+                                  ]
+                                },
+                                "mapPublicIpOnLaunch": false,
+                                "tags": [
+                                  {
+                                    "key": "aws-cdk:subnet-name",
+                                    "value": "Private"
+                                  },
+                                  {
+                                    "key": "aws-cdk:subnet-type",
+                                    "value": "Private"
+                                  },
+                                  {
+                                    "key": "Name",
+                                    "value": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC/PrivateSubnet1"
+                                  }
+                                ]
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
+                              "version": "2.15.0"
+                            }
+                          },
+                          "Acl": {
+                            "id": "Acl",
+                            "path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC/PrivateSubnet1/Acl",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.Resource",
+                              "version": "2.15.0"
+                            }
+                          },
+                          "RouteTable": {
+                            "id": "RouteTable",
+                            "path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC/PrivateSubnet1/RouteTable",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
+                              "aws:cdk:cloudformation:props": {
+                                "vpcId": {
+                                  "Ref": "MyVPCAFB07A31"
+                                },
+                                "tags": [
+                                  {
+                                    "key": "Name",
+                                    "value": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC/PrivateSubnet1"
+                                  }
+                                ]
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
+                              "version": "2.15.0"
+                            }
+                          },
+                          "RouteTableAssociation": {
+                            "id": "RouteTableAssociation",
+                            "path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC/PrivateSubnet1/RouteTableAssociation",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
+                              "aws:cdk:cloudformation:props": {
+                                "routeTableId": {
+                                  "Ref": "MyVPCPrivateSubnet1RouteTable133BD901"
+                                },
+                                "subnetId": {
+                                  "Ref": "MyVPCPrivateSubnet1Subnet641543F4"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
+                              "version": "2.15.0"
+                            }
+                          },
+                          "DefaultRoute": {
+                            "id": "DefaultRoute",
+                            "path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC/PrivateSubnet1/DefaultRoute",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::EC2::Route",
+                              "aws:cdk:cloudformation:props": {
+                                "routeTableId": {
+                                  "Ref": "MyVPCPrivateSubnet1RouteTable133BD901"
+                                },
+                                "destinationCidrBlock": "0.0.0.0/0",
+                                "natGatewayId": {
+                                  "Ref": "MyVPCPublicSubnet1NATGateway838228A5"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
+                              "version": "2.15.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_ec2.PrivateSubnet",
+                          "version": "2.15.0"
+                        }
+                      },
+                      "PrivateSubnet2": {
+                        "id": "PrivateSubnet2",
+                        "path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC/PrivateSubnet2",
+                        "children": {
+                          "Subnet": {
+                            "id": "Subnet",
+                            "path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC/PrivateSubnet2/Subnet",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
+                              "aws:cdk:cloudformation:props": {
+                                "cidrBlock": "10.0.192.0/18",
+                                "vpcId": {
+                                  "Ref": "MyVPCAFB07A31"
+                                },
+                                "availabilityZone": {
+                                  "Fn::Select": [
+                                    1,
+                                    {
+                                      "Fn::GetAZs": ""
+                                    }
+                                  ]
+                                },
+                                "mapPublicIpOnLaunch": false,
+                                "tags": [
+                                  {
+                                    "key": "aws-cdk:subnet-name",
+                                    "value": "Private"
+                                  },
+                                  {
+                                    "key": "aws-cdk:subnet-type",
+                                    "value": "Private"
+                                  },
+                                  {
+                                    "key": "Name",
+                                    "value": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC/PrivateSubnet2"
+                                  }
+                                ]
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
+                              "version": "2.15.0"
+                            }
+                          },
+                          "Acl": {
+                            "id": "Acl",
+                            "path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC/PrivateSubnet2/Acl",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.Resource",
+                              "version": "2.15.0"
+                            }
+                          },
+                          "RouteTable": {
+                            "id": "RouteTable",
+                            "path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC/PrivateSubnet2/RouteTable",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
+                              "aws:cdk:cloudformation:props": {
+                                "vpcId": {
+                                  "Ref": "MyVPCAFB07A31"
+                                },
+                                "tags": [
+                                  {
+                                    "key": "Name",
+                                    "value": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC/PrivateSubnet2"
+                                  }
+                                ]
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
+                              "version": "2.15.0"
+                            }
+                          },
+                          "RouteTableAssociation": {
+                            "id": "RouteTableAssociation",
+                            "path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC/PrivateSubnet2/RouteTableAssociation",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
+                              "aws:cdk:cloudformation:props": {
+                                "routeTableId": {
+                                  "Ref": "MyVPCPrivateSubnet2RouteTableDF3CB76C"
+                                },
+                                "subnetId": {
+                                  "Ref": "MyVPCPrivateSubnet2SubnetA420D3F0"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
+                              "version": "2.15.0"
+                            }
+                          },
+                          "DefaultRoute": {
+                            "id": "DefaultRoute",
+                            "path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC/PrivateSubnet2/DefaultRoute",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::EC2::Route",
+                              "aws:cdk:cloudformation:props": {
+                                "routeTableId": {
+                                  "Ref": "MyVPCPrivateSubnet2RouteTableDF3CB76C"
+                                },
+                                "destinationCidrBlock": "0.0.0.0/0",
+                                "natGatewayId": {
+                                  "Ref": "MyVPCPublicSubnet1NATGateway838228A5"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
+                              "version": "2.15.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_ec2.PrivateSubnet",
+                          "version": "2.15.0"
+                        }
+                      },
+                      "IGW": {
+                        "id": "IGW",
+                        "path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC/IGW",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::EC2::InternetGateway",
+                          "aws:cdk:cloudformation:props": {
+                            "tags": [
+                              {
+                                "key": "Name",
+                                "value": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnInternetGateway",
+                          "version": "2.15.0"
+                        }
+                      },
+                      "VPCGW": {
+                        "id": "VPCGW",
+                        "path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC/VPCGW",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::EC2::VPCGatewayAttachment",
+                          "aws:cdk:cloudformation:props": {
+                            "vpcId": {
+                              "Ref": "MyVPCAFB07A31"
+                            },
+                            "internetGatewayId": {
+                              "Ref": "MyVPCIGW30AB6DD6"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnVPCGatewayAttachment",
+                          "version": "2.15.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.Vpc",
+                      "version": "2.15.0"
+                    }
+                  },
+                  "MyCluster": {
+                    "id": "MyCluster",
+                    "path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyCluster",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyCluster/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::ECS::Cluster",
+                          "aws:cdk:cloudformation:props": {}
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_ecs.CfnCluster",
+                          "version": "2.15.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ecs.Cluster",
+                      "version": "2.15.0"
+                    }
+                  },
+                  "BackendService": {
+                    "id": "BackendService",
+                    "path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/BackendService",
+                    "children": {
+                      "LB": {
+                        "id": "LB",
+                        "path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/BackendService/LB",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/BackendService/LB/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
+                              "aws:cdk:cloudformation:props": {
+                                "loadBalancerAttributes": [
+                                  {
+                                    "key": "deletion_protection.enabled",
+                                    "value": "false"
+                                  }
+                                ],
+                                "scheme": "internet-facing",
+                                "securityGroups": [
+                                  {
+                                    "Fn::GetAtt": [
+                                      "BackendServiceLBSecurityGroup2B9BA648",
+                                      "GroupId"
+                                    ]
+                                  }
+                                ],
+                                "subnets": [
+                                  {
+                                    "Ref": "MyVPCPublicSubnet1Subnet0C75866A"
+                                  },
+                                  {
+                                    "Ref": "MyVPCPublicSubnet2Subnet4DDFF14C"
+                                  }
+                                ],
+                                "type": "application"
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_elasticloadbalancingv2.CfnLoadBalancer",
+                              "version": "2.15.0"
+                            }
+                          },
+                          "SecurityGroup": {
+                            "id": "SecurityGroup",
+                            "path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/BackendService/LB/SecurityGroup",
+                            "children": {
+                              "Resource": {
+                                "id": "Resource",
+                                "path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/BackendService/LB/SecurityGroup/Resource",
+                                "attributes": {
+                                  "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
+                                  "aws:cdk:cloudformation:props": {
+                                    "groupDescription": "Automatically created Security Group for ELB FarmHarvestStackECSEnvironmentECSFargateStackBackendServiceLBB569665D",
+                                    "securityGroupIngress": [
+                                      {
+                                        "cidrIp": "0.0.0.0/0",
+                                        "ipProtocol": "tcp",
+                                        "fromPort": 80,
+                                        "toPort": 80,
+                                        "description": "Allow from anyone on port 80"
+                                      }
+                                    ],
+                                    "vpcId": {
+                                      "Ref": "MyVPCAFB07A31"
+                                    }
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
+                                  "version": "2.15.0"
+                                }
+                              },
+                              "to FarmHarvestStackECSEnvironmentECSFargateStackBackendServiceSecurityGroup26F3B66C:80": {
+                                "id": "to FarmHarvestStackECSEnvironmentECSFargateStackBackendServiceSecurityGroup26F3B66C:80",
+                                "path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/BackendService/LB/SecurityGroup/to FarmHarvestStackECSEnvironmentECSFargateStackBackendServiceSecurityGroup26F3B66C:80",
+                                "attributes": {
+                                  "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroupEgress",
+                                  "aws:cdk:cloudformation:props": {
+                                    "groupId": {
+                                      "Fn::GetAtt": [
+                                        "BackendServiceLBSecurityGroup2B9BA648",
+                                        "GroupId"
+                                      ]
+                                    },
+                                    "ipProtocol": "tcp",
+                                    "description": "Load balancer to target",
+                                    "destinationSecurityGroupId": {
+                                      "Fn::GetAtt": [
+                                        "BackendServiceSecurityGroup7599F85E",
+                                        "GroupId"
+                                      ]
+                                    },
+                                    "fromPort": 80,
+                                    "toPort": 80
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroupEgress",
+                                  "version": "2.15.0"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
+                              "version": "2.15.0"
+                            }
+                          },
+                          "PublicListener": {
+                            "id": "PublicListener",
+                            "path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/BackendService/LB/PublicListener",
+                            "children": {
+                              "Resource": {
+                                "id": "Resource",
+                                "path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/BackendService/LB/PublicListener/Resource",
+                                "attributes": {
+                                  "aws:cdk:cloudformation:type": "AWS::ElasticLoadBalancingV2::Listener",
+                                  "aws:cdk:cloudformation:props": {
+                                    "defaultActions": [
+                                      {
+                                        "type": "forward",
+                                        "targetGroupArn": {
+                                          "Ref": "BackendServiceLBPublicListenerECSGroupD43CD2AB"
+                                        }
+                                      }
+                                    ],
+                                    "loadBalancerArn": {
+                                      "Ref": "BackendServiceLB09608E98"
+                                    },
+                                    "port": 80,
+                                    "protocol": "HTTP"
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.aws_elasticloadbalancingv2.CfnListener",
+                                  "version": "2.15.0"
+                                }
+                              },
+                              "ECSGroup": {
+                                "id": "ECSGroup",
+                                "path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/BackendService/LB/PublicListener/ECSGroup",
+                                "children": {
+                                  "Resource": {
+                                    "id": "Resource",
+                                    "path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/BackendService/LB/PublicListener/ECSGroup/Resource",
+                                    "attributes": {
+                                      "aws:cdk:cloudformation:type": "AWS::ElasticLoadBalancingV2::TargetGroup",
+                                      "aws:cdk:cloudformation:props": {
+                                        "healthCheckPath": "/health",
+                                        "port": 80,
+                                        "protocol": "HTTP",
+                                        "targetGroupAttributes": [
+                                          {
+                                            "key": "stickiness.enabled",
+                                            "value": "false"
+                                          }
+                                        ],
+                                        "targetType": "ip",
+                                        "vpcId": {
+                                          "Ref": "MyVPCAFB07A31"
+                                        }
+                                      }
+                                    },
+                                    "constructInfo": {
+                                      "fqn": "aws-cdk-lib.aws_elasticloadbalancingv2.CfnTargetGroup",
+                                      "version": "2.15.0"
+                                    }
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.aws_elasticloadbalancingv2.ApplicationTargetGroup",
+                                  "version": "2.15.0"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_elasticloadbalancingv2.ApplicationListener",
+                              "version": "2.15.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_elasticloadbalancingv2.ApplicationLoadBalancer",
+                          "version": "2.15.0"
+                        }
+                      },
+                      "LoadBalancerDNS": {
+                        "id": "LoadBalancerDNS",
+                        "path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/BackendService/LoadBalancerDNS",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnOutput",
+                          "version": "2.15.0"
+                        }
+                      },
+                      "ServiceURL": {
+                        "id": "ServiceURL",
+                        "path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/BackendService/ServiceURL",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnOutput",
+                          "version": "2.15.0"
+                        }
+                      },
+                      "TaskDef": {
+                        "id": "TaskDef",
+                        "path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/BackendService/TaskDef",
+                        "children": {
+                          "TaskRole": {
+                            "id": "TaskRole",
+                            "path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/BackendService/TaskDef/TaskRole",
+                            "children": {
+                              "Resource": {
+                                "id": "Resource",
+                                "path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/BackendService/TaskDef/TaskRole/Resource",
+                                "attributes": {
+                                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                                  "aws:cdk:cloudformation:props": {
+                                    "assumeRolePolicyDocument": {
+                                      "Statement": [
+                                        {
+                                          "Action": "sts:AssumeRole",
+                                          "Effect": "Allow",
+                                          "Principal": {
+                                            "Service": "ecs-tasks.amazonaws.com"
+                                          }
+                                        }
+                                      ],
+                                      "Version": "2012-10-17"
+                                    }
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                                  "version": "2.15.0"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_iam.Role",
+                              "version": "2.15.0"
+                            }
+                          },
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/BackendService/TaskDef/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::ECS::TaskDefinition",
+                              "aws:cdk:cloudformation:props": {
+                                "containerDefinitions": [
+                                  {
+                                    "essential": true,
+                                    "image": {
+                                      "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:222e9a8c64b30fc38eb64c2928ed7642af51766e6432b31a861aab799a0e0ff8"
+                                    },
+                                    "name": "web",
+                                    "portMappings": [
+                                      {
+                                        "containerPort": 80,
+                                        "protocol": "tcp"
+                                      }
+                                    ],
+                                    "logConfiguration": {
+                                      "logDriver": "awslogs",
+                                      "options": {
+                                        "awslogs-group": {
+                                          "Ref": "BackendServiceTaskDefwebLogGroup614D1BFF"
+                                        },
+                                        "awslogs-stream-prefix": "BackendService",
+                                        "awslogs-region": {
+                                          "Ref": "AWS::Region"
+                                        }
+                                      }
+                                    },
+                                    "environment": [
+                                      {
+                                        "name": "myVar",
+                                        "value": "somevariable"
+                                      }
+                                    ]
+                                  }
+                                ],
+                                "cpu": "512",
+                                "executionRoleArn": {
+                                  "Fn::GetAtt": [
+                                    "BackendServiceTaskDefExecutionRole15BE46B5",
+                                    "Arn"
+                                  ]
+                                },
+                                "family": "FarmHarvestStackECSEnvironmentECSFargateStackBackendServiceTaskDefB3B5FC69",
+                                "memory": "1024",
+                                "networkMode": "awsvpc",
+                                "requiresCompatibilities": [
+                                  "FARGATE"
+                                ],
+                                "taskRoleArn": {
+                                  "Fn::GetAtt": [
+                                    "BackendServiceTaskDefTaskRoleD63B95BB",
+                                    "Arn"
+                                  ]
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_ecs.CfnTaskDefinition",
+                              "version": "2.15.0"
+                            }
+                          },
+                          "web": {
+                            "id": "web",
+                            "path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/BackendService/TaskDef/web",
+                            "children": {
+                              "AssetImage": {
+                                "id": "AssetImage",
+                                "path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/BackendService/TaskDef/web/AssetImage",
+                                "children": {
+                                  "Staging": {
+                                    "id": "Staging",
+                                    "path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/BackendService/TaskDef/web/AssetImage/Staging",
+                                    "constructInfo": {
+                                      "fqn": "aws-cdk-lib.AssetStaging",
+                                      "version": "2.15.0"
+                                    }
+                                  },
+                                  "Repository": {
+                                    "id": "Repository",
+                                    "path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/BackendService/TaskDef/web/AssetImage/Repository",
+                                    "constructInfo": {
+                                      "fqn": "aws-cdk-lib.aws_ecr.RepositoryBase",
+                                      "version": "2.15.0"
+                                    }
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.aws_ecr_assets.DockerImageAsset",
+                                  "version": "2.15.0"
+                                }
+                              },
+                              "LogGroup": {
+                                "id": "LogGroup",
+                                "path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/BackendService/TaskDef/web/LogGroup",
+                                "children": {
+                                  "Resource": {
+                                    "id": "Resource",
+                                    "path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/BackendService/TaskDef/web/LogGroup/Resource",
+                                    "attributes": {
+                                      "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
+                                      "aws:cdk:cloudformation:props": {}
+                                    },
+                                    "constructInfo": {
+                                      "fqn": "aws-cdk-lib.aws_logs.CfnLogGroup",
+                                      "version": "2.15.0"
+                                    }
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.aws_logs.LogGroup",
+                                  "version": "2.15.0"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_ecs.ContainerDefinition",
+                              "version": "2.15.0"
+                            }
+                          },
+                          "ExecutionRole": {
+                            "id": "ExecutionRole",
+                            "path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/BackendService/TaskDef/ExecutionRole",
+                            "children": {
+                              "Resource": {
+                                "id": "Resource",
+                                "path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/BackendService/TaskDef/ExecutionRole/Resource",
+                                "attributes": {
+                                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                                  "aws:cdk:cloudformation:props": {
+                                    "assumeRolePolicyDocument": {
+                                      "Statement": [
+                                        {
+                                          "Action": "sts:AssumeRole",
+                                          "Effect": "Allow",
+                                          "Principal": {
+                                            "Service": "ecs-tasks.amazonaws.com"
+                                          }
+                                        }
+                                      ],
+                                      "Version": "2012-10-17"
+                                    }
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                                  "version": "2.15.0"
+                                }
+                              },
+                              "DefaultPolicy": {
+                                "id": "DefaultPolicy",
+                                "path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/BackendService/TaskDef/ExecutionRole/DefaultPolicy",
+                                "children": {
+                                  "Resource": {
+                                    "id": "Resource",
+                                    "path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/BackendService/TaskDef/ExecutionRole/DefaultPolicy/Resource",
+                                    "attributes": {
+                                      "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                                      "aws:cdk:cloudformation:props": {
+                                        "policyDocument": {
+                                          "Statement": [
+                                            {
+                                              "Action": [
+                                                "ecr:BatchCheckLayerAvailability",
+                                                "ecr:GetDownloadUrlForLayer",
+                                                "ecr:BatchGetImage"
+                                              ],
+                                              "Effect": "Allow",
+                                              "Resource": {
+                                                "Fn::Join": [
+                                                  "",
+                                                  [
+                                                    "arn:",
+                                                    {
+                                                      "Ref": "AWS::Partition"
+                                                    },
+                                                    ":ecr:",
+                                                    {
+                                                      "Ref": "AWS::Region"
+                                                    },
+                                                    ":",
+                                                    {
+                                                      "Ref": "AWS::AccountId"
+                                                    },
+                                                    ":repository/",
+                                                    {
+                                                      "Fn::Sub": "cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}"
+                                                    }
+                                                  ]
+                                                ]
+                                              }
+                                            },
+                                            {
+                                              "Action": "ecr:GetAuthorizationToken",
+                                              "Effect": "Allow",
+                                              "Resource": "*"
+                                            },
+                                            {
+                                              "Action": [
+                                                "logs:CreateLogStream",
+                                                "logs:PutLogEvents"
+                                              ],
+                                              "Effect": "Allow",
+                                              "Resource": {
+                                                "Fn::GetAtt": [
+                                                  "BackendServiceTaskDefwebLogGroup614D1BFF",
+                                                  "Arn"
+                                                ]
+                                              }
+                                            }
+                                          ],
+                                          "Version": "2012-10-17"
+                                        },
+                                        "policyName": "BackendServiceTaskDefExecutionRoleDefaultPolicyDFB9BC56",
+                                        "roles": [
+                                          {
+                                            "Ref": "BackendServiceTaskDefExecutionRole15BE46B5"
+                                          }
+                                        ]
+                                      }
+                                    },
+                                    "constructInfo": {
+                                      "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                                      "version": "2.15.0"
+                                    }
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.aws_iam.Policy",
+                                  "version": "2.15.0"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_iam.Role",
+                              "version": "2.15.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_ecs.FargateTaskDefinition",
+                          "version": "2.15.0"
+                        }
+                      },
+                      "Service": {
+                        "id": "Service",
+                        "path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/BackendService/Service",
+                        "children": {
+                          "Service": {
+                            "id": "Service",
+                            "path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/BackendService/Service/Service",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::ECS::Service",
+                              "aws:cdk:cloudformation:props": {
+                                "cluster": {
+                                  "Ref": "MyCluster4C1BA579"
+                                },
+                                "deploymentConfiguration": {
+                                  "maximumPercent": 200,
+                                  "minimumHealthyPercent": 50
+                                },
+                                "desiredCount": 2,
+                                "enableEcsManagedTags": false,
+                                "healthCheckGracePeriodSeconds": 60,
+                                "launchType": "FARGATE",
+                                "loadBalancers": [
+                                  {
+                                    "targetGroupArn": {
+                                      "Ref": "BackendServiceLBPublicListenerECSGroupD43CD2AB"
+                                    },
+                                    "containerName": "web",
+                                    "containerPort": 80
+                                  }
+                                ],
+                                "networkConfiguration": {
+                                  "awsvpcConfiguration": {
+                                    "assignPublicIp": "DISABLED",
+                                    "subnets": [
+                                      {
+                                        "Ref": "MyVPCPrivateSubnet1Subnet641543F4"
+                                      },
+                                      {
+                                        "Ref": "MyVPCPrivateSubnet2SubnetA420D3F0"
+                                      }
+                                    ],
+                                    "securityGroups": [
+                                      {
+                                        "Fn::GetAtt": [
+                                          "BackendServiceSecurityGroup7599F85E",
+                                          "GroupId"
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                },
+                                "taskDefinition": {
+                                  "Ref": "BackendServiceTaskDef9F97F56B"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_ecs.CfnService",
+                              "version": "2.15.0"
+                            }
+                          },
+                          "SecurityGroup": {
+                            "id": "SecurityGroup",
+                            "path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/BackendService/Service/SecurityGroup",
+                            "children": {
+                              "Resource": {
+                                "id": "Resource",
+                                "path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/BackendService/Service/SecurityGroup/Resource",
+                                "attributes": {
+                                  "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
+                                  "aws:cdk:cloudformation:props": {
+                                    "groupDescription": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/BackendService/Service/SecurityGroup",
+                                    "securityGroupEgress": [
+                                      {
+                                        "cidrIp": "0.0.0.0/0",
+                                        "description": "Allow all outbound traffic by default",
+                                        "ipProtocol": "-1"
+                                      }
+                                    ],
+                                    "vpcId": {
+                                      "Ref": "MyVPCAFB07A31"
+                                    }
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
+                                  "version": "2.15.0"
+                                }
+                              },
+                              "from FarmHarvestStackECSEnvironmentECSFargateStackBackendServiceLBSecurityGroup9642D491:80": {
+                                "id": "from FarmHarvestStackECSEnvironmentECSFargateStackBackendServiceLBSecurityGroup9642D491:80",
+                                "path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/BackendService/Service/SecurityGroup/from FarmHarvestStackECSEnvironmentECSFargateStackBackendServiceLBSecurityGroup9642D491:80",
+                                "attributes": {
+                                  "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroupIngress",
+                                  "aws:cdk:cloudformation:props": {
+                                    "ipProtocol": "tcp",
+                                    "description": "Load balancer to target",
+                                    "fromPort": 80,
+                                    "groupId": {
+                                      "Fn::GetAtt": [
+                                        "BackendServiceSecurityGroup7599F85E",
+                                        "GroupId"
+                                      ]
+                                    },
+                                    "sourceSecurityGroupId": {
+                                      "Fn::GetAtt": [
+                                        "BackendServiceLBSecurityGroup2B9BA648",
+                                        "GroupId"
+                                      ]
+                                    },
+                                    "toPort": 80
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroupIngress",
+                                  "version": "2.15.0"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
+                              "version": "2.15.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_ecs.FargateService",
+                          "version": "2.15.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ecs_patterns.ApplicationLoadBalancedFargateService",
+                      "version": "2.15.0"
+                    }
+                  },
+                  "albUrl": {
+                    "id": "albUrl",
+                    "path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/albUrl",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnOutput",
+                      "version": "2.15.0"
+                    }
+                  },
+                  "CDKMetadata": {
+                    "id": "CDKMetadata",
+                    "path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/CDKMetadata",
+                    "children": {
+                      "Default": {
+                        "id": "Default",
+                        "path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/CDKMetadata/Default",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "2.15.0"
+                        }
+                      },
+                      "Condition": {
+                        "id": "Condition",
+                        "path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/CDKMetadata/Condition",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnCondition",
+                          "version": "2.15.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.0.76"
+                    }
+                  },
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "2.15.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/CheckBootstrapVersion",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnRule",
                       "version": "2.15.0"

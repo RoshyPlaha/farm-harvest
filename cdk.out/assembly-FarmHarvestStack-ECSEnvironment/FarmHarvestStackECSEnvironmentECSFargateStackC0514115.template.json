@@ -1,0 +1,1097 @@
+{
+  "Resources": {
+    "MyVPCAFB07A31": {
+      "Type": "AWS::EC2::VPC",
+      "Properties": {
+        "CidrBlock": "10.0.0.0/16",
+        "EnableDnsHostnames": true,
+        "EnableDnsSupport": true,
+        "InstanceTenancy": "default",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC/Resource"
+      }
+    },
+    "MyVPCPublicSubnet1Subnet0C75866A": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "CidrBlock": "10.0.0.0/18",
+        "VpcId": {
+          "Ref": "MyVPCAFB07A31"
+        },
+        "AvailabilityZone": {
+          "Fn::Select": [
+            0,
+            {
+              "Fn::GetAZs": ""
+            }
+          ]
+        },
+        "MapPublicIpOnLaunch": true,
+        "Tags": [
+          {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Public"
+          },
+          {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Public"
+          },
+          {
+            "Key": "Name",
+            "Value": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC/PublicSubnet1"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC/PublicSubnet1/Subnet"
+      }
+    },
+    "MyVPCPublicSubnet1RouteTable538A9511": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": {
+          "Ref": "MyVPCAFB07A31"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC/PublicSubnet1"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC/PublicSubnet1/RouteTable"
+      }
+    },
+    "MyVPCPublicSubnet1RouteTableAssociation8A950D8E": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "MyVPCPublicSubnet1RouteTable538A9511"
+        },
+        "SubnetId": {
+          "Ref": "MyVPCPublicSubnet1Subnet0C75866A"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC/PublicSubnet1/RouteTableAssociation"
+      }
+    },
+    "MyVPCPublicSubnet1DefaultRouteAF81AA9B": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "MyVPCPublicSubnet1RouteTable538A9511"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": {
+          "Ref": "MyVPCIGW30AB6DD6"
+        }
+      },
+      "DependsOn": [
+        "MyVPCVPCGWE6F260E1"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC/PublicSubnet1/DefaultRoute"
+      }
+    },
+    "MyVPCPublicSubnet1EIP5EB6147D": {
+      "Type": "AWS::EC2::EIP",
+      "Properties": {
+        "Domain": "vpc",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC/PublicSubnet1"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC/PublicSubnet1/EIP"
+      }
+    },
+    "MyVPCPublicSubnet1NATGateway838228A5": {
+      "Type": "AWS::EC2::NatGateway",
+      "Properties": {
+        "SubnetId": {
+          "Ref": "MyVPCPublicSubnet1Subnet0C75866A"
+        },
+        "AllocationId": {
+          "Fn::GetAtt": [
+            "MyVPCPublicSubnet1EIP5EB6147D",
+            "AllocationId"
+          ]
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC/PublicSubnet1"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC/PublicSubnet1/NATGateway"
+      }
+    },
+    "MyVPCPublicSubnet2Subnet4DDFF14C": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "CidrBlock": "10.0.64.0/18",
+        "VpcId": {
+          "Ref": "MyVPCAFB07A31"
+        },
+        "AvailabilityZone": {
+          "Fn::Select": [
+            1,
+            {
+              "Fn::GetAZs": ""
+            }
+          ]
+        },
+        "MapPublicIpOnLaunch": true,
+        "Tags": [
+          {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Public"
+          },
+          {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Public"
+          },
+          {
+            "Key": "Name",
+            "Value": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC/PublicSubnet2"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC/PublicSubnet2/Subnet"
+      }
+    },
+    "MyVPCPublicSubnet2RouteTableA6A1CD3D": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": {
+          "Ref": "MyVPCAFB07A31"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC/PublicSubnet2"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC/PublicSubnet2/RouteTable"
+      }
+    },
+    "MyVPCPublicSubnet2RouteTableAssociationF22D63CA": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "MyVPCPublicSubnet2RouteTableA6A1CD3D"
+        },
+        "SubnetId": {
+          "Ref": "MyVPCPublicSubnet2Subnet4DDFF14C"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC/PublicSubnet2/RouteTableAssociation"
+      }
+    },
+    "MyVPCPublicSubnet2DefaultRoute24460202": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "MyVPCPublicSubnet2RouteTableA6A1CD3D"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": {
+          "Ref": "MyVPCIGW30AB6DD6"
+        }
+      },
+      "DependsOn": [
+        "MyVPCVPCGWE6F260E1"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC/PublicSubnet2/DefaultRoute"
+      }
+    },
+    "MyVPCPrivateSubnet1Subnet641543F4": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "CidrBlock": "10.0.128.0/18",
+        "VpcId": {
+          "Ref": "MyVPCAFB07A31"
+        },
+        "AvailabilityZone": {
+          "Fn::Select": [
+            0,
+            {
+              "Fn::GetAZs": ""
+            }
+          ]
+        },
+        "MapPublicIpOnLaunch": false,
+        "Tags": [
+          {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Private"
+          },
+          {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Private"
+          },
+          {
+            "Key": "Name",
+            "Value": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC/PrivateSubnet1"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC/PrivateSubnet1/Subnet"
+      }
+    },
+    "MyVPCPrivateSubnet1RouteTable133BD901": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": {
+          "Ref": "MyVPCAFB07A31"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC/PrivateSubnet1"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC/PrivateSubnet1/RouteTable"
+      }
+    },
+    "MyVPCPrivateSubnet1RouteTableAssociation85DFBFBB": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "MyVPCPrivateSubnet1RouteTable133BD901"
+        },
+        "SubnetId": {
+          "Ref": "MyVPCPrivateSubnet1Subnet641543F4"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC/PrivateSubnet1/RouteTableAssociation"
+      }
+    },
+    "MyVPCPrivateSubnet1DefaultRouteA8EE6636": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "MyVPCPrivateSubnet1RouteTable133BD901"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "NatGatewayId": {
+          "Ref": "MyVPCPublicSubnet1NATGateway838228A5"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC/PrivateSubnet1/DefaultRoute"
+      }
+    },
+    "MyVPCPrivateSubnet2SubnetA420D3F0": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "CidrBlock": "10.0.192.0/18",
+        "VpcId": {
+          "Ref": "MyVPCAFB07A31"
+        },
+        "AvailabilityZone": {
+          "Fn::Select": [
+            1,
+            {
+              "Fn::GetAZs": ""
+            }
+          ]
+        },
+        "MapPublicIpOnLaunch": false,
+        "Tags": [
+          {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Private"
+          },
+          {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Private"
+          },
+          {
+            "Key": "Name",
+            "Value": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC/PrivateSubnet2"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC/PrivateSubnet2/Subnet"
+      }
+    },
+    "MyVPCPrivateSubnet2RouteTableDF3CB76C": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": {
+          "Ref": "MyVPCAFB07A31"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC/PrivateSubnet2"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC/PrivateSubnet2/RouteTable"
+      }
+    },
+    "MyVPCPrivateSubnet2RouteTableAssociationC373B6FE": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "MyVPCPrivateSubnet2RouteTableDF3CB76C"
+        },
+        "SubnetId": {
+          "Ref": "MyVPCPrivateSubnet2SubnetA420D3F0"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC/PrivateSubnet2/RouteTableAssociation"
+      }
+    },
+    "MyVPCPrivateSubnet2DefaultRoute37F90B5D": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "MyVPCPrivateSubnet2RouteTableDF3CB76C"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "NatGatewayId": {
+          "Ref": "MyVPCPublicSubnet1NATGateway838228A5"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC/PrivateSubnet2/DefaultRoute"
+      }
+    },
+    "MyVPCIGW30AB6DD6": {
+      "Type": "AWS::EC2::InternetGateway",
+      "Properties": {
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC/IGW"
+      }
+    },
+    "MyVPCVPCGWE6F260E1": {
+      "Type": "AWS::EC2::VPCGatewayAttachment",
+      "Properties": {
+        "VpcId": {
+          "Ref": "MyVPCAFB07A31"
+        },
+        "InternetGatewayId": {
+          "Ref": "MyVPCIGW30AB6DD6"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC/VPCGW"
+      }
+    },
+    "MyCluster4C1BA579": {
+      "Type": "AWS::ECS::Cluster",
+      "Metadata": {
+        "aws:cdk:path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyCluster/Resource"
+      }
+    },
+    "BackendServiceLB09608E98": {
+      "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
+      "Properties": {
+        "LoadBalancerAttributes": [
+          {
+            "Key": "deletion_protection.enabled",
+            "Value": "false"
+          }
+        ],
+        "Scheme": "internet-facing",
+        "SecurityGroups": [
+          {
+            "Fn::GetAtt": [
+              "BackendServiceLBSecurityGroup2B9BA648",
+              "GroupId"
+            ]
+          }
+        ],
+        "Subnets": [
+          {
+            "Ref": "MyVPCPublicSubnet1Subnet0C75866A"
+          },
+          {
+            "Ref": "MyVPCPublicSubnet2Subnet4DDFF14C"
+          }
+        ],
+        "Type": "application"
+      },
+      "DependsOn": [
+        "MyVPCPublicSubnet1DefaultRouteAF81AA9B",
+        "MyVPCPublicSubnet2DefaultRoute24460202"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/BackendService/LB/Resource"
+      }
+    },
+    "BackendServiceLBSecurityGroup2B9BA648": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "Automatically created Security Group for ELB FarmHarvestStackECSEnvironmentECSFargateStackBackendServiceLBB569665D",
+        "SecurityGroupIngress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow from anyone on port 80",
+            "FromPort": 80,
+            "IpProtocol": "tcp",
+            "ToPort": 80
+          }
+        ],
+        "VpcId": {
+          "Ref": "MyVPCAFB07A31"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/BackendService/LB/SecurityGroup/Resource"
+      }
+    },
+    "BackendServiceLBSecurityGrouptoFarmHarvestStackECSEnvironmentECSFargateStackBackendServiceSecurityGroup26F3B66C806657CAB8": {
+      "Type": "AWS::EC2::SecurityGroupEgress",
+      "Properties": {
+        "GroupId": {
+          "Fn::GetAtt": [
+            "BackendServiceLBSecurityGroup2B9BA648",
+            "GroupId"
+          ]
+        },
+        "IpProtocol": "tcp",
+        "Description": "Load balancer to target",
+        "DestinationSecurityGroupId": {
+          "Fn::GetAtt": [
+            "BackendServiceSecurityGroup7599F85E",
+            "GroupId"
+          ]
+        },
+        "FromPort": 80,
+        "ToPort": 80
+      },
+      "Metadata": {
+        "aws:cdk:path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/BackendService/LB/SecurityGroup/to FarmHarvestStackECSEnvironmentECSFargateStackBackendServiceSecurityGroup26F3B66C:80"
+      }
+    },
+    "BackendServiceLBPublicListener2FA7FC98": {
+      "Type": "AWS::ElasticLoadBalancingV2::Listener",
+      "Properties": {
+        "DefaultActions": [
+          {
+            "TargetGroupArn": {
+              "Ref": "BackendServiceLBPublicListenerECSGroupD43CD2AB"
+            },
+            "Type": "forward"
+          }
+        ],
+        "LoadBalancerArn": {
+          "Ref": "BackendServiceLB09608E98"
+        },
+        "Port": 80,
+        "Protocol": "HTTP"
+      },
+      "Metadata": {
+        "aws:cdk:path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/BackendService/LB/PublicListener/Resource"
+      }
+    },
+    "BackendServiceLBPublicListenerECSGroupD43CD2AB": {
+      "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
+      "Properties": {
+        "HealthCheckPath": "/health",
+        "Port": 80,
+        "Protocol": "HTTP",
+        "TargetGroupAttributes": [
+          {
+            "Key": "stickiness.enabled",
+            "Value": "false"
+          }
+        ],
+        "TargetType": "ip",
+        "VpcId": {
+          "Ref": "MyVPCAFB07A31"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/BackendService/LB/PublicListener/ECSGroup/Resource"
+      }
+    },
+    "BackendServiceTaskDefTaskRoleD63B95BB": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "ecs-tasks.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/BackendService/TaskDef/TaskRole/Resource"
+      }
+    },
+    "BackendServiceTaskDef9F97F56B": {
+      "Type": "AWS::ECS::TaskDefinition",
+      "Properties": {
+        "ContainerDefinitions": [
+          {
+            "Environment": [
+              {
+                "Name": "myVar",
+                "Value": "somevariable"
+              }
+            ],
+            "Essential": true,
+            "Image": {
+              "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:222e9a8c64b30fc38eb64c2928ed7642af51766e6432b31a861aab799a0e0ff8"
+            },
+            "LogConfiguration": {
+              "LogDriver": "awslogs",
+              "Options": {
+                "awslogs-group": {
+                  "Ref": "BackendServiceTaskDefwebLogGroup614D1BFF"
+                },
+                "awslogs-stream-prefix": "BackendService",
+                "awslogs-region": {
+                  "Ref": "AWS::Region"
+                }
+              }
+            },
+            "Name": "web",
+            "PortMappings": [
+              {
+                "ContainerPort": 80,
+                "Protocol": "tcp"
+              }
+            ]
+          }
+        ],
+        "Cpu": "512",
+        "ExecutionRoleArn": {
+          "Fn::GetAtt": [
+            "BackendServiceTaskDefExecutionRole15BE46B5",
+            "Arn"
+          ]
+        },
+        "Family": "FarmHarvestStackECSEnvironmentECSFargateStackBackendServiceTaskDefB3B5FC69",
+        "Memory": "1024",
+        "NetworkMode": "awsvpc",
+        "RequiresCompatibilities": [
+          "FARGATE"
+        ],
+        "TaskRoleArn": {
+          "Fn::GetAtt": [
+            "BackendServiceTaskDefTaskRoleD63B95BB",
+            "Arn"
+          ]
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/BackendService/TaskDef/Resource"
+      }
+    },
+    "BackendServiceTaskDefwebLogGroup614D1BFF": {
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain",
+      "Metadata": {
+        "aws:cdk:path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/BackendService/TaskDef/web/LogGroup/Resource"
+      }
+    },
+    "BackendServiceTaskDefExecutionRole15BE46B5": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "ecs-tasks.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/BackendService/TaskDef/ExecutionRole/Resource"
+      }
+    },
+    "BackendServiceTaskDefExecutionRoleDefaultPolicyDFB9BC56": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "ecr:BatchCheckLayerAvailability",
+                "ecr:GetDownloadUrlForLayer",
+                "ecr:BatchGetImage"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":ecr:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":repository/",
+                    {
+                      "Fn::Sub": "cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}"
+                    }
+                  ]
+                ]
+              }
+            },
+            {
+              "Action": "ecr:GetAuthorizationToken",
+              "Effect": "Allow",
+              "Resource": "*"
+            },
+            {
+              "Action": [
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "BackendServiceTaskDefwebLogGroup614D1BFF",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "BackendServiceTaskDefExecutionRoleDefaultPolicyDFB9BC56",
+        "Roles": [
+          {
+            "Ref": "BackendServiceTaskDefExecutionRole15BE46B5"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/BackendService/TaskDef/ExecutionRole/DefaultPolicy/Resource"
+      }
+    },
+    "BackendService2147DAF9": {
+      "Type": "AWS::ECS::Service",
+      "Properties": {
+        "Cluster": {
+          "Ref": "MyCluster4C1BA579"
+        },
+        "DeploymentConfiguration": {
+          "MaximumPercent": 200,
+          "MinimumHealthyPercent": 50
+        },
+        "DesiredCount": 2,
+        "EnableECSManagedTags": false,
+        "HealthCheckGracePeriodSeconds": 60,
+        "LaunchType": "FARGATE",
+        "LoadBalancers": [
+          {
+            "ContainerName": "web",
+            "ContainerPort": 80,
+            "TargetGroupArn": {
+              "Ref": "BackendServiceLBPublicListenerECSGroupD43CD2AB"
+            }
+          }
+        ],
+        "NetworkConfiguration": {
+          "AwsvpcConfiguration": {
+            "AssignPublicIp": "DISABLED",
+            "SecurityGroups": [
+              {
+                "Fn::GetAtt": [
+                  "BackendServiceSecurityGroup7599F85E",
+                  "GroupId"
+                ]
+              }
+            ],
+            "Subnets": [
+              {
+                "Ref": "MyVPCPrivateSubnet1Subnet641543F4"
+              },
+              {
+                "Ref": "MyVPCPrivateSubnet2SubnetA420D3F0"
+              }
+            ]
+          }
+        },
+        "TaskDefinition": {
+          "Ref": "BackendServiceTaskDef9F97F56B"
+        }
+      },
+      "DependsOn": [
+        "BackendServiceLBPublicListenerECSGroupD43CD2AB",
+        "BackendServiceLBPublicListener2FA7FC98"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/BackendService/Service/Service"
+      }
+    },
+    "BackendServiceSecurityGroup7599F85E": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/BackendService/Service/SecurityGroup",
+        "SecurityGroupEgress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound traffic by default",
+            "IpProtocol": "-1"
+          }
+        ],
+        "VpcId": {
+          "Ref": "MyVPCAFB07A31"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/BackendService/Service/SecurityGroup/Resource"
+      }
+    },
+    "BackendServiceSecurityGroupfromFarmHarvestStackECSEnvironmentECSFargateStackBackendServiceLBSecurityGroup9642D4918050D797E1": {
+      "Type": "AWS::EC2::SecurityGroupIngress",
+      "Properties": {
+        "IpProtocol": "tcp",
+        "Description": "Load balancer to target",
+        "FromPort": 80,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "BackendServiceSecurityGroup7599F85E",
+            "GroupId"
+          ]
+        },
+        "SourceSecurityGroupId": {
+          "Fn::GetAtt": [
+            "BackendServiceLBSecurityGroup2B9BA648",
+            "GroupId"
+          ]
+        },
+        "ToPort": 80
+      },
+      "Metadata": {
+        "aws:cdk:path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/BackendService/Service/SecurityGroup/from FarmHarvestStackECSEnvironmentECSFargateStackBackendServiceLBSecurityGroup9642D491:80"
+      }
+    },
+    "CDKMetadata": {
+      "Type": "AWS::CDK::Metadata",
+      "Properties": {
+        "Analytics": "v2:deflate64:H4sIAAAAAAAA/31SwW7bMAz9lt0VbS2w7ZymXRGg2Ayn6DVgZNZj40iGSKUIDP/7aDlu3G7YiU9PjyL5qGt79dV++QSvvHDVftHQznYbAbc3Sm07dNe2e2qdWT37p2JlirRryG3SzqMM3AWVIQk+wq7BC3/hlszBEQgF/yYewN26GMJPkHsQfIWTKSIdFV4eXnvBqHgSjJ2cT0vRXn8f0IvZoEuR5HQfQ2pzD/8l7uqIzH/Ra5/53qBj262axFp9UE3wB8Qahql4f4vP5Gma6SMTvAB5jDPunLvBeCQ3+jTCXG7bggyjsl22rbqc3XoIUN1AA95h9SEdG2Ah16hilxXk66Ou69/ZeYh357mOdDZ/1kx4dv+olXUDk5GzY28IDrYrw7j3HIugeXlRIxqmi1tgRmF7G9we4/oA9fApdMV6Z0tsA5OEeLoBRtOEWs1/CPVbxQn3vSmRQ4qjfb+StElMfkh/ba0O5C5mEt1Dld3vjQ8V2hf+fLz6br/pp39hokVMXuiAthzjH1PqB+oQAwAA"
+      },
+      "Metadata": {
+        "aws:cdk:path": "FarmHarvestStack/ECSEnvironment/ECSFargateStack/CDKMetadata/Default"
+      },
+      "Condition": "CDKMetadataAvailable"
+    }
+  },
+  "Outputs": {
+    "BackendServiceLoadBalancerDNSE742582D": {
+      "Value": {
+        "Fn::GetAtt": [
+          "BackendServiceLB09608E98",
+          "DNSName"
+        ]
+      }
+    },
+    "BackendServiceServiceURLB1770053": {
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "http://",
+            {
+              "Fn::GetAtt": [
+                "BackendServiceLB09608E98",
+                "DNSName"
+              ]
+            }
+          ]
+        ]
+      }
+    },
+    "albUrl": {
+      "Value": {
+        "Fn::GetAtt": [
+          "BackendServiceLB09608E98",
+          "DNSName"
+        ]
+      },
+      "Export": {
+        "Name": "albUrl"
+      }
+    }
+  },
+  "Conditions": {
+    "CDKMetadataAvailable": {
+      "Fn::Or": [
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "af-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ca-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "cn-north-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "cn-northwest-1"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-north-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-3"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "me-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "sa-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-east-2"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-west-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-west-2"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "Parameters": {
+    "BootstrapVersion": {
+      "Type": "AWS::SSM::Parameter::Value<String>",
+      "Default": "/cdk-bootstrap/hnb659fds/version",
+      "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+    }
+  },
+  "Rules": {
+    "CheckBootstrapVersion": {
+      "Assertions": [
+        {
+          "Assert": {
+            "Fn::Not": [
+              {
+                "Fn::Contains": [
+                  [
+                    "1",
+                    "2",
+                    "3",
+                    "4",
+                    "5"
+                  ],
+                  {
+                    "Ref": "BootstrapVersion"
+                  }
+                ]
+              }
+            ]
+          },
+          "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+        }
+      ]
+    }
+  }
+}

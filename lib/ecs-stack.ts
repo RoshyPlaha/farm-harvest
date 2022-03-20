@@ -24,7 +24,7 @@ export class ECSFargateStack extends cdk.Stack {
         cpu: 512,
         desiredCount: 2,
         taskImageOptions: {
-          image: ecs.ContainerImage.fromAsset("../backend-api/"),
+          image: ecs.ContainerImage.fromAsset("./backend-api/"),
           environment: {
             myVar: "somevariable"
           }

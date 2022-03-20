@@ -1,7 +1,7 @@
 {
   "version": "16.0.0",
   "files": {
-    "9fd23bf518abf13c20eaae7d8431b20e9de466021eba0af39bd840bbe6342341": {
+    "6584409808e02dc852236538c9ffc32ecf8b45930f3ae24e44e40d589cc15c74": {
       "source": {
         "path": "FarmHarvestStack.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "9fd23bf518abf13c20eaae7d8431b20e9de466021eba0af39bd840bbe6342341.json",
+          "objectKey": "6584409808e02dc852236538c9ffc32ecf8b45930f3ae24e44e40d589cc15c74.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

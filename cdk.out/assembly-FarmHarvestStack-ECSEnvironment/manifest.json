@@ -1,0 +1,293 @@
+{
+  "version": "16.0.0",
+  "artifacts": {
+    "FarmHarvestStackECSEnvironmentECSFargateStackC0514115.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "FarmHarvestStackECSEnvironmentECSFargateStackC0514115.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "FarmHarvestStackECSEnvironmentECSFargateStackC0514115": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "FarmHarvestStackECSEnvironmentECSFargateStackC0514115.template.json",
+        "validateOnSynth": true,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/71405e89559e5b22ba3e683a6d231accacb457381017b4b1a7a72018d01ef048.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "FarmHarvestStackECSEnvironmentECSFargateStackC0514115.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        },
+        "stackName": "ECSEnvironment-ECSFargateStack"
+      },
+      "dependencies": [
+        "FarmHarvestStackECSEnvironmentECSFargateStackC0514115.assets"
+      ],
+      "metadata": {
+        "/FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVPCAFB07A31"
+          }
+        ],
+        "/FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC/PublicSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVPCPublicSubnet1Subnet0C75866A"
+          }
+        ],
+        "/FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC/PublicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVPCPublicSubnet1RouteTable538A9511"
+          }
+        ],
+        "/FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVPCPublicSubnet1RouteTableAssociation8A950D8E"
+          }
+        ],
+        "/FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC/PublicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVPCPublicSubnet1DefaultRouteAF81AA9B"
+          }
+        ],
+        "/FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC/PublicSubnet1/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVPCPublicSubnet1EIP5EB6147D"
+          }
+        ],
+        "/FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC/PublicSubnet1/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVPCPublicSubnet1NATGateway838228A5"
+          }
+        ],
+        "/FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC/PublicSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVPCPublicSubnet2Subnet4DDFF14C"
+          }
+        ],
+        "/FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC/PublicSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVPCPublicSubnet2RouteTableA6A1CD3D"
+          }
+        ],
+        "/FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC/PublicSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVPCPublicSubnet2RouteTableAssociationF22D63CA"
+          }
+        ],
+        "/FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC/PublicSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVPCPublicSubnet2DefaultRoute24460202"
+          }
+        ],
+        "/FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC/PrivateSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVPCPrivateSubnet1Subnet641543F4"
+          }
+        ],
+        "/FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC/PrivateSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVPCPrivateSubnet1RouteTable133BD901"
+          }
+        ],
+        "/FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC/PrivateSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVPCPrivateSubnet1RouteTableAssociation85DFBFBB"
+          }
+        ],
+        "/FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC/PrivateSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVPCPrivateSubnet1DefaultRouteA8EE6636"
+          }
+        ],
+        "/FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC/PrivateSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVPCPrivateSubnet2SubnetA420D3F0"
+          }
+        ],
+        "/FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC/PrivateSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVPCPrivateSubnet2RouteTableDF3CB76C"
+          }
+        ],
+        "/FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC/PrivateSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVPCPrivateSubnet2RouteTableAssociationC373B6FE"
+          }
+        ],
+        "/FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC/PrivateSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVPCPrivateSubnet2DefaultRoute37F90B5D"
+          }
+        ],
+        "/FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVPCIGW30AB6DD6"
+          }
+        ],
+        "/FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyVPC/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVPCVPCGWE6F260E1"
+          }
+        ],
+        "/FarmHarvestStack/ECSEnvironment/ECSFargateStack/MyCluster/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyCluster4C1BA579"
+          }
+        ],
+        "/FarmHarvestStack/ECSEnvironment/ECSFargateStack/BackendService/LB/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BackendServiceLB09608E98"
+          }
+        ],
+        "/FarmHarvestStack/ECSEnvironment/ECSFargateStack/BackendService/LB/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BackendServiceLBSecurityGroup2B9BA648"
+          }
+        ],
+        "/FarmHarvestStack/ECSEnvironment/ECSFargateStack/BackendService/LB/SecurityGroup/to FarmHarvestStackECSEnvironmentECSFargateStackBackendServiceSecurityGroup26F3B66C:80": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BackendServiceLBSecurityGrouptoFarmHarvestStackECSEnvironmentECSFargateStackBackendServiceSecurityGroup26F3B66C806657CAB8"
+          }
+        ],
+        "/FarmHarvestStack/ECSEnvironment/ECSFargateStack/BackendService/LB/PublicListener/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BackendServiceLBPublicListener2FA7FC98"
+          }
+        ],
+        "/FarmHarvestStack/ECSEnvironment/ECSFargateStack/BackendService/LB/PublicListener/ECSGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BackendServiceLBPublicListenerECSGroupD43CD2AB"
+          }
+        ],
+        "/FarmHarvestStack/ECSEnvironment/ECSFargateStack/BackendService/LoadBalancerDNS": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BackendServiceLoadBalancerDNSE742582D"
+          }
+        ],
+        "/FarmHarvestStack/ECSEnvironment/ECSFargateStack/BackendService/ServiceURL": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BackendServiceServiceURLB1770053"
+          }
+        ],
+        "/FarmHarvestStack/ECSEnvironment/ECSFargateStack/BackendService/TaskDef/TaskRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BackendServiceTaskDefTaskRoleD63B95BB"
+          }
+        ],
+        "/FarmHarvestStack/ECSEnvironment/ECSFargateStack/BackendService/TaskDef/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BackendServiceTaskDef9F97F56B"
+          }
+        ],
+        "/FarmHarvestStack/ECSEnvironment/ECSFargateStack/BackendService/TaskDef/web/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BackendServiceTaskDefwebLogGroup614D1BFF"
+          }
+        ],
+        "/FarmHarvestStack/ECSEnvironment/ECSFargateStack/BackendService/TaskDef/ExecutionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BackendServiceTaskDefExecutionRole15BE46B5"
+          }
+        ],
+        "/FarmHarvestStack/ECSEnvironment/ECSFargateStack/BackendService/TaskDef/ExecutionRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BackendServiceTaskDefExecutionRoleDefaultPolicyDFB9BC56"
+          }
+        ],
+        "/FarmHarvestStack/ECSEnvironment/ECSFargateStack/BackendService/Service/Service": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BackendService2147DAF9"
+          }
+        ],
+        "/FarmHarvestStack/ECSEnvironment/ECSFargateStack/BackendService/Service/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BackendServiceSecurityGroup7599F85E"
+          }
+        ],
+        "/FarmHarvestStack/ECSEnvironment/ECSFargateStack/BackendService/Service/SecurityGroup/from FarmHarvestStackECSEnvironmentECSFargateStackBackendServiceLBSecurityGroup9642D491:80": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BackendServiceSecurityGroupfromFarmHarvestStackECSEnvironmentECSFargateStackBackendServiceLBSecurityGroup9642D4918050D797E1"
+          }
+        ],
+        "/FarmHarvestStack/ECSEnvironment/ECSFargateStack/albUrl": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "albUrl"
+          }
+        ],
+        "/FarmHarvestStack/ECSEnvironment/ECSFargateStack/CDKMetadata/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadata"
+          }
+        ],
+        "/FarmHarvestStack/ECSEnvironment/ECSFargateStack/CDKMetadata/Condition": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadataAvailable"
+          }
+        ],
+        "/FarmHarvestStack/ECSEnvironment/ECSFargateStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/FarmHarvestStack/ECSEnvironment/ECSFargateStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "FarmHarvestStack/ECSEnvironment/ECSFargateStack"
+    }
+  }
+}
