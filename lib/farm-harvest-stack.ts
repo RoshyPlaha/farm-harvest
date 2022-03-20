@@ -21,10 +21,7 @@ export class FarmHarvestStack extends Stack {
     });
     
     const testingStage = pipeline.addStage(new MyPipelineCustomStage(this, 'InEnvironment'));
-    testingStage.addPost(new ManualApprovalStep('Manual approval before production'));
-
-
-    // const ecsStage = pipeline.addStage(new MyPipelineECSStage(this, 'InEnvironment'));
+    const ecsStage = pipeline.addStage(new MyPipelineECSStage(this, 'InEnvironment'));
 
 
   }
