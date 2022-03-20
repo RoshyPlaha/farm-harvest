@@ -2,6 +2,7 @@ import * as cdk from 'aws-cdk-lib';
 import { Vpc } from 'aws-cdk-lib/aws-ec2';
 import * as ecs from 'aws-cdk-lib/aws-ecs'
 import * as ecs_patterns from 'aws-cdk-lib/aws-ecs-patterns'
+import * as path from 'path';
 
 import { Construct } from 'constructs';
 
@@ -24,7 +25,7 @@ export class ECSFargateStack extends cdk.Stack {
         cpu: 512,
         desiredCount: 2,
         taskImageOptions: {
-          image: ecs.ContainerImage.fromAsset("./backend-api/"),
+          image: ecs.ContainerImage.fromAsset(path.join(__dirname, 'ecs/backend-api')),
           environment: {
             myVar: "somevariable"
           }
