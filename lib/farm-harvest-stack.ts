@@ -21,7 +21,7 @@ export class FarmHarvestStack extends Stack {
     });
     
     const testingStage = pipeline.addStage(new MyPipelineCustomStage(this, 'InEnvironment'));
-    const ecsStage = pipeline.addStage(new MyPipelineECSStage(this, 'InEnvironment'));
+    const ecsStage = pipeline.addStage(new MyPipelineECSStage(this, 'ECSEnvironment'));
 
 
   }
