@@ -2,7 +2,7 @@ import { Stack, StackProps } from 'aws-cdk-lib';
 import { CodePipelineSource, ShellStep, CodePipeline as codepipeline, ManualApprovalStep } from 'aws-cdk-lib/pipelines';
 
 import { Construct } from 'constructs';
-import { MyPipelineAppStage } from './stage';
+import { MyPipelineCustomStage, MyPipelineECSStage } from './stage';
 
 export class FarmHarvestStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -19,14 +19,12 @@ export class FarmHarvestStack extends Stack {
         ]
       })
     });
-
-  
     
-    const testingStage = pipeline.addStage(new MyPipelineAppStage(this, 'InEnvironment'));
-
-
-
+    const testingStage = pipeline.addStage(new MyPipelineCustomStage(this, 'InEnvironment'));
     testingStage.addPost(new ManualApprovalStep('Manual approval before production'));
+
+
+    // const ecsStage = pipeline.addStage(new MyPipelineECSStage(this, 'InEnvironment'));
 
 
   }
