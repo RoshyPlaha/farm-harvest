@@ -13,6 +13,8 @@ export class FarmHarvestStack extends Stack {
       synth: new ShellStep('Synth', {
         input: CodePipelineSource.gitHub('RoshyPlaha/farm-harvest', 'main'),
         commands: [
+          'pwd',
+          'ls -of',
           'npm ci',
           'npm run build',
           'npx cdk synth'
